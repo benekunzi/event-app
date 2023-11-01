@@ -15,6 +15,8 @@ struct RouteHeaderView: View {
     @EnvironmentObject var locationManager: LocationManager
     @EnvironmentObject var eventViewModel: EventViewModel
     
+    private let size = UIScreen.main.bounds.size
+    
     var body: some View {
         HStack {
             Text("Route")
@@ -28,7 +30,8 @@ struct RouteHeaderView: View {
                 Image(systemName: "xmark")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .frame(width: 12, height: 12)
+//                    .frame(width: 12, height: 12)
+                    .frame(width: self.size.height / 71, height: self.size.height / 71)
                     .padding(8)
                     .foregroundColor(.black)
                     .background(Circle().fill(Color.gray.opacity(0.3)))
@@ -117,7 +120,7 @@ struct RouteOptionsView: View {
     @EnvironmentObject var locationManager: LocationManager
     @EnvironmentObject var eventViewModel: EventViewModel
     
-    let imageSize: CGFloat = 18
+    let imageSize: CGFloat = UIScreen.main.bounds.width / 21.83
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -129,10 +132,6 @@ struct RouteOptionsView: View {
                     }
                     else {
                         print("no mapView")
-                    }
-                    withAnimation(.easeInOut(duration: 0.4)) {
-                        self.routeViewModel.currentOffsetY = 0.0
-                        self.routeViewModel.endingOffsetY = 0.0
                     }
                 } label: {
                     VStack (alignment: .leading){
@@ -168,7 +167,7 @@ struct RouteOptionsView: View {
         }
         .frame(maxWidth: .infinity)
         .padding()
-        .background(.white)
+        .background(Color.white)
         .cornerRadius(20)
     }
 }

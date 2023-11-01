@@ -6,8 +6,8 @@
 //
 
 import SwiftUI
-import FirebaseCore
 import GoogleMaps
+import Firebase
 
 let API_KEY = "AIzaSyAXIFnUlTArloAcPJECpKy5NwlNN9GSFWQ"
 

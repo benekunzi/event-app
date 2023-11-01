@@ -11,16 +11,26 @@ import SwiftUI
 struct DateSelectorView: View {
     @Binding var selectedDate: Date
     @Namespace private var animation
+    @Binding var showCalendar: Bool
     
-    @State private var showCalendar = false
+    @State private var calendarId: Int = 0
+    
+    static let dateFormatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "E d. MMMM yyyy"
+            return formatter
+        }()
     
     var body: some View {
         ZStack {
-            HStack(spacing: 20) {
+            HStack(spacing: 10) {
                 Button(action: {
                     selectedDate = Calendar.current.date(byAdding: .day, value: -1, to: selectedDate) ?? selectedDate
                 }, label: {
                     Image(systemName: "chevron.left")
+                        .font(.system(size: 18))
+                        .padding(.vertical, 10)
+                        .padding(.leading, 8)
                 })
 
                 Button(action: {
@@ -28,37 +38,49 @@ struct DateSelectorView: View {
                         showCalendar.toggle()
                     }
                 }, label: {
-                    Text(selectedDate, style: .date)
+                    Text("\(self.selectedDate, formatter: Self.dateFormatter)")
+                        .font(.system(size: 18))
                 })
 
                 Button(action: {
                     selectedDate = Calendar.current.date(byAdding: .day, value: 1, to: selectedDate) ?? selectedDate
                 }, label: {
                     Image(systemName: "chevron.right")
+                        .font(.system(size: 18))
+                        .padding(.vertical, 10)
+                        .padding(.trailing, 8)
                 })
             }
+            .background(RemoveBackgroundColor())
             .foregroundColor(Color.black.opacity(0.9))
-            .padding(.vertical, 10)
-            .padding(.horizontal, 20)
             .padding(.top, showCalendar ? 50 : 0)
-            .background(.white)
-            .cornerRadius(15)
-            .shadow(color: .gray, radius: 5, x: 0, y: 5)
+            .background(
+                ZStack {
+                    Color.clear
+                        .background(BlurView(style: .systemThinMaterialLight))
+                        .cornerRadius(15)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 15)
+                            .stroke(Color.gray, lineWidth: 1))
+                    
+                })
+
             
             if showCalendar {
                 DatePicker("", selection: $selectedDate, displayedComponents: .date)
                     .datePickerStyle(.graphical)
                     .environment(\.calendar, .gregorianWithMondayFirst)
-                    .frame(width: UIScreen.main.bounds.width - 50, height: 300)
+                    .frame(maxWidth: .infinity)
                     .labelsHidden()
                     .background(Color.white)
                     .cornerRadius(12)
                     .padding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
                     .padding(.horizontal, 25)
-                    .onChange(of: selectedDate) { newValue in
-                        print(newValue)
+                    .id(self.calendarId)
+                    .onChange(of: selectedDate) { _ in
                         withAnimation(.easeInOut) {
                             showCalendar.toggle()
+                            self.calendarId += 1
                         }
                     }
             }

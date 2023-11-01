@@ -78,7 +78,7 @@ extension String {
         case "BUS":
             color = .orange
         case "SUBWAY":
-            color = .teal
+            color = .blue
         case "TRAM":
             color = .purple
         case "HEAVY_RAIL":

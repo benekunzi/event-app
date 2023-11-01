@@ -505,6 +505,23 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		2871FF9CE6DD60B9298C19F519D31113 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 59E6FE59D5F3D68B625433CA9235E808 /* GoogleMaps.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		2A9C2025329B1FF9D7C028C1F11D125A /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4AC61DD7C4D42EB1F43201C7B730BDCE /* Pods-event-app-event-appUITests.release.xcconfig */;
@@ -745,41 +762,6 @@
 			};
 			name = Release;
 		};
-		A0D32A92267F8EB045540F58A3FB9721 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E530F1D3A209832F1FC30C4D762FECDC /* GoogleMaps.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		A6F9A3420493DDFF37FE086ABBB8AEA5 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 59E6FE59D5F3D68B625433CA9235E808 /* GoogleMaps.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		B642EC1AE7037CE3A7B956F2C8C8019C /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 980DC14A159B598D7BEF6D8D15521CBF /* Pods-event-appTests.release.xcconfig */;
@@ -856,6 +838,24 @@
 			};
 			name = Release;
 		};
+		EE798DD35112381FCC891F4E9D1CF820 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E530F1D3A209832F1FC30C4D762FECDC /* GoogleMaps.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		FC84C545E59557CA728083B4119B9785 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B8F7BBB5F4B60A0179C52EFCE656A9C7 /* Pods-event-app-event-appUITests.debug.xcconfig */;
@@ -908,8 +908,8 @@
 		432269212CA7661476954A7A4DAA814D /* Build configuration list for PBXAggregateTarget "GoogleMaps" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A6F9A3420493DDFF37FE086ABBB8AEA5 /* Debug */,
-				A0D32A92267F8EB045540F58A3FB9721 /* Release */,
+				2871FF9CE6DD60B9298C19F519D31113 /* Debug */,
+				EE798DD35112381FCC891F4E9D1CF820 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

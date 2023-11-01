@@ -76,10 +76,14 @@ struct DraggableSheet<Content: View>: View {
 }
 
 struct Handle: View {
+    
+    let size = UIScreen.main.bounds
+    
     var body: some View {
         HStack {
             RoundedRectangle(cornerRadius: 2.5)
-                .frame(width: 50, height: 5)
+//                .frame(width: 50, height: 5)
+                .frame(width: self.size.width / 7.86, height: self.size.height / 170.4)
                 .foregroundColor(Color.gray.opacity(0.5))
                 .padding(.vertical, 20)
         }

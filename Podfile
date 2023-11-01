@@ -7,7 +7,7 @@ target 'event-app' do
   use_frameworks!
 
   # Pods for event-app
-  pod 'GoogleMaps', '7.4.0'
+  pod 'GoogleMaps', '8.2.0.0'
 
   target 'event-appTests' do
     inherit! :search_paths

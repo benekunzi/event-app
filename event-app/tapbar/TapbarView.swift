@@ -10,6 +10,9 @@ import SwiftUI
 
 enum Tab: String, CaseIterable {
     case house
+    case bookmark
+//    case book
+    case heart
     case person
 }
 
@@ -19,28 +22,42 @@ struct TapbarView: View {
     private var fillImage: String {
         selectedTab.rawValue + ".fill"
     }
+    private let size = UIScreen.main.bounds.size
     
     var body: some View {
-        VStack{
+        VStack(spacing: 0){
+            Divider()
+                .foregroundColor(.gray)
+            
             HStack(alignment: .top) {
                 ForEach(Tab.allCases, id: \.rawValue) { tab in
                     Spacer()
                     Image(systemName: selectedTab == tab ? fillImage : tab.rawValue)
-                        .scaleEffect(selectedTab == tab ? 1.25 : 1.0)
                         .foregroundColor(selectedTab == tab ? .blue : .gray)
-                        .font(.system(size: 18))
+                        .font(.system(size: 20))
                         .onTapGesture {
-                            withAnimation(.easeInOut(duration: 0.1)) {
-                                selectedTab = tab
-                            }
+                            self.selectedTab = tab
                         }
                     Spacer()
                 }
-                .padding(.bottom, 30)
             }
-            .frame(height: 80)
-            .background(.white)
-            .cornerRadius(10)
+            .padding(.top)
+            Spacer()
         }
+        .frame(maxWidth: .infinity)
+//        .padding(.bottom, 20)
+//        .frame(height: 80)
+        .frame(height: self.size.height / 10.65)
+        .background(Color.white)
+    }
+}
+
+struct Blur: UIViewRepresentable {
+    var style: UIBlurEffect.Style = .systemMaterial
+    func makeUIView(context: Context) -> UIVisualEffectView {
+        return UIVisualEffectView(effect: UIBlurEffect(style: style))
+    }
+    func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
+        uiView.effect = UIBlurEffect(style: style)
     }
 }
