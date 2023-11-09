@@ -15,7 +15,7 @@ import UIKit
 class EventViewModel: ObservableObject {
     @Published var events: [Event] = []
     @Published var organizer: [Organizer] = []
-    @Published var participations: [String:Bool] = [:]
+    @Published var participations: [String: [String: Bool]] = [:]
     @Published var loadedEvents: [String] = []
     
     func fetchEvents(date: Date, completion: @escaping () -> Void) {
@@ -29,74 +29,25 @@ class EventViewModel: ObservableObject {
         ref.observeSingleEvent(of: .value, with: { snapshot in
             guard let eventDict = snapshot.value as? [String: [String: Any]] else { return }
             for singleEvent in eventDict {
-                let eventName = singleEvent.key
-                
-                var latitude: Double = 0.0
-                var longitude: Double = 0.0
-                
-                if let coordinates = singleEvent.value["coordinates"] as? NSDictionary {
-                    latitude = coordinates["lat"] as? Double ?? 0.0
-                    longitude = coordinates["lng"] as? Double ?? 0.0
-                } else {
-                    print("Error: Could not extract 'coordinates' from the dictionary.")
-                }
-                
-                let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-                
-                guard let timeWindow = singleEvent.value["time window"] as? String else {
-                    print("Error: Could not extract 'time window' from the dictionary.")
-                    continue
-                }
-                
-                guard let eventHash = singleEvent.value["hash"] as? String else {
-                    print("Error: Could not extract 'hash' from the dictionary.")
-                    continue
-                }
-                
-                guard let organizer = singleEvent.value["organizer"] as? String else {
-                    print("Error: Could not extract 'organizer' from the dictionary.")
-                    continue
-                }
-                
-                guard let eventDescription = singleEvent.value["description"] as? String else {
-                    print("Error: Could not extract 'description' from the dictionary.")
-                    continue
-                }
-                
-                guard let location = singleEvent.value["location"] as? String else {
-                    print("Error: Could not extract 'location' from the dictionary.")
-                    continue
-                }
-                
-                guard let locationName = singleEvent.value["location-name"] as? String else {
-                    print("Error: Could not extract 'locationName' from the dictionary.")
-                    continue
-                }
-                
-                guard let entry_str = singleEvent.value["entry"] as? String else {
-                    print("Error: Could not extract 'entry' from the dictionary.")
-                    continue
-                }
-                
-                let entry: Int = Int(entry_str) ?? -1
-                
-                let newEvent = Event(title: eventName, coordinate: coordinate, eventDescription: eventDescription, date: date, location: location, locationName: locationName, timeWindow: timeWindow, hash_value: eventHash, organizer: organizer, entry: entry)
-                
-                let imageName = eventName // Replace this with the appropriate value
+                if let event = self.createEvent(singleEvent: singleEvent, date: date) {
+                    let imageName = event.title! // Replace this with the appropriate value
 
-                dispatchGroup.enter() // Enter the DispatchGroup
-                
-                self.downloadImage(childName: "event-images", imageName: imageName) { image in
-                    newEvent.image = image
-                    dispatchGroup.leave() // Leave the DispatchGroup
-                }
-                
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyy-MM-dd"
-                let todaysDate = dateFormatter.string(from: date)
+                    dispatchGroup.enter() // Enter the DispatchGroup
+                    
+                    self.downloadImage(childName: "event-images",
+                                       imageName: imageName,
+                                       date: selectedDate) { image in
+                        event.image = image
+                        dispatchGroup.leave() // Leave the DispatchGroup
+                    }
+                    
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy-MM-dd"
+                    let todaysDate = dateFormatter.string(from: date)
 
-                self.events.append(newEvent)
-                self.loadedEvents.append(todaysDate)
+                    self.events.append(event)
+                    self.loadedEvents.append(todaysDate)
+                }
             }
         })
         
@@ -149,7 +100,7 @@ class EventViewModel: ObservableObject {
                 dispatchGroup.enter() // Enter the DispatchGroup
                 
                 self.downloadImage(childName: "organizer-images/\(uuid)",
-                                   imageName: imageName) { image in
+                                   imageName: imageName, date: nil) { image in
                     newOrganizer.image = image
                     dispatchGroup.leave()
                 }
@@ -159,29 +110,133 @@ class EventViewModel: ObservableObject {
         })
     }
     
-    func updateParticipation(userID: String, hash: String, status: Bool) {
-        print("userid: \(userID)")
-        print("hash: \(hash)")
+    func updateParticipation(userID: String, hash: String, status: Bool, date: Date) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let selectedDate = dateFormatter.string(from: date)
+        
         let ref = Database.database().reference()
-        ref.child("Users/\(userID)/Participations").updateChildValues([hash:status])
+        ref.child("Users/\(userID)/Participations/\(selectedDate)").updateChildValues([hash:status])
     }
     
     func getAllParticipatedEvents(userID: String) {
         print("get all participations")
-        let ref = Database.database().reference()
-        ref.child("Users/\(userID)").observe(.value) { snapshot in
-            guard let eventDict = snapshot.value as? [String: [String: Any]] else { return }
+        
+        let ref = Database.database().reference().child("Users/\(userID)/Participations")
+        
+        ref.observeSingleEvent(of: .value, with: { snapshot in
+            guard let eventDict = snapshot.value as? [String: [String: Bool]] else {
+                print("could not decode eventdict")
+                return
+            }
+            self.participations = eventDict
+        })
+    }
+    
+    func downloadAllParticipatedEvents() {
+        
+        let dispatchGroup = DispatchGroup()
+
+        for date in self.participations {
+            print(date.key)
+            let ref = Database.database().reference().child("Events/\(date.key)")
             
-            if let participations = eventDict["Participations"] as? [String: Bool] {
-                self.participations = participations
-            }
-            else {
-                print("could not decode participations in dictionary. \(eventDict)")
-            }
+            ref.observeSingleEvent(of: .value, with: { snapshot in
+                guard let eventDict = snapshot.value as? [String: [String: Any]] else { return }
+                
+                for (key, data) in eventDict {
+                    let contains = self.events.contains { event in
+                        return event.hash_value == key
+                    }
+                    if !contains {
+                        let dateFormatter = DateFormatter()
+                        dateFormatter.dateFormat = "yyyy-MM-dd"
+                        if let dateDate = dateFormatter.date(from: date.key) {
+                            if let event = self.createEvent(singleEvent: (key, data), date: dateDate) {
+                                let imageName = event.title! // Replace this with the appropriate value
+
+                                dispatchGroup.enter() // Enter the DispatchGroup
+                                
+                                self.downloadImage(childName: "event-images",
+                                                   imageName: imageName,
+                                                   date: date.key) { image in
+                                    event.image = image
+                                    dispatchGroup.leave() // Leave the DispatchGroup
+                                }
+                                
+                                self.events.append(event)
+                                self.loadedEvents.append(date.key)
+                            }
+                        }
+                        else {
+                            print("could not format string date to date object: \(date.key)")
+                        }
+
+                    }
+                    else {
+                        print("already downloaded event")
+                    }
+                }
+            })
         }
     }
     
-    private func downloadImage(childName: String, imageName: String, completion: @escaping (UIImage?) -> Void) {
+    private func createEvent(singleEvent: (key: String, value: Dictionary<String, Any>), date: Date) -> Event? {
+        let eventHash = singleEvent.key
+        
+        var latitude: Double = 0.0
+        var longitude: Double = 0.0
+        
+        if let coordinates = singleEvent.value["coordinates"] as? NSDictionary {
+            latitude = coordinates["lat"] as? Double ?? 0.0
+            longitude = coordinates["lng"] as? Double ?? 0.0
+        } else {
+            print("Error: Could not extract 'coordinates' from the dictionary.")
+        }
+        
+        let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        
+        guard let eventName = singleEvent.value["event name"] as? String else {
+            print("Error: Could not extract 'event name' from the dictionary.")
+            return nil
+        }
+        
+        guard let timeWindow = singleEvent.value["time window"] as? String else {
+            print("Error: Could not extract 'time window' from the dictionary.")
+            return nil
+        }
+        
+        guard let organizer = singleEvent.value["organizer"] as? String else {
+            print("Error: Could not extract 'organizer' from the dictionary.")
+            return nil
+        }
+        
+        guard let eventDescription = singleEvent.value["description"] as? String else {
+            print("Error: Could not extract 'description' from the dictionary.")
+            return nil
+        }
+        
+        guard let location = singleEvent.value["location"] as? String else {
+            print("Error: Could not extract 'location' from the dictionary.")
+            return nil
+        }
+        
+        guard let locationName = singleEvent.value["location-name"] as? String else {
+            print("Error: Could not extract 'locationName' from the dictionary.")
+            return nil
+        }
+        
+        guard let entry_str = singleEvent.value["entry"] as? String else {
+            print("Error: Could not extract 'entry' from the dictionary.")
+            return nil
+        }
+        
+        let entry: Int = Int(entry_str) ?? -1
+        
+        return Event(title: eventName, coordinate: coordinate, eventDescription: eventDescription, date: date, location: location, locationName: locationName, timeWindow: timeWindow, hash_value: eventHash, organizer: organizer, entry: entry)
+    }
+    
+    private func downloadImage(childName: String, imageName: String, date: String?, completion: @escaping (UIImage?) -> Void) {
         let storage = Storage.storage(url:"gs://event-app-382418.appspot.com")
         let storageRef = storage.reference()
         
@@ -195,7 +250,13 @@ class EventViewModel: ObservableObject {
             }
             
             let imageType = image_types[index]
-            let imageRef = storageRef.child("images/\(childName)/\(imageName)\(imageType)")
+            var imageRef = storageRef.child("")
+            if let date = date {
+                imageRef = storageRef.child("images/\(childName)/\(date)/\(imageName)\(imageType)")
+            }
+            else {
+                imageRef = storageRef.child("images/\(childName)/\(imageName)\(imageType)")
+            }
 
             imageRef.getData(maxSize: 2 * 1024 * 1024) { data, error in
                 if let error = error {

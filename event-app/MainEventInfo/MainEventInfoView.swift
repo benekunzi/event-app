@@ -8,94 +8,17 @@
 import Foundation
 import SwiftUI
 
-//struct MainEventInfoView: View {
-//
-//    @EnvironmentObject var routeViewModel: RouteViewModel
-//    @EnvironmentObject var mapEventViewModel: MapEventViewModel
-//    @EnvironmentObject var locationManager: LocationManager
-//    @EnvironmentObject var eventViewModel: EventViewModel
-//
-//    @State private var selectedTab: Tab = .house
-//    @State private var showCalendar = false
-//
-//    init() {
-//        let tabBarAppearance = UITabBarAppearance()
-//        tabBarAppearance.configureWithTransparentBackground()
-//        UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
-//    }
-//
-//    var body: some View {
-//        ZStack {
-//            TabView(selection: self.$selectedTab) {
-//                ZStack {
-//                    EventMapView()
-//                        .edgesIgnoringSafeArea(.top)
-//
-//                    CustomSheet {
-//                        MainInfoView()
-//                    }
-//                }
-//                .tabItem {
-//                    Image(systemName: "house.fill")
-//                }
-//                .tag(Tab.house)
-//
-//                SavedEventsView()
-//                .edgesIgnoringSafeArea(.top)
-//                .tabItem {
-//                    Image(systemName: "bookmark.fill")
-//                }
-//                .tag(Tab.bookmark)
-//
-//
-//                OrganizerView()
-//                .tabItem {
-//                    Image(systemName: "heart.fill")
-//                }
-//                .tag(Tab.heart)
-//
-//                PreferencesView()
-//                .tabItem {
-//                    Image(systemName: "person.fill")
-//                }
-//                .tag(Tab.person)
-//            }
-//
-////                Spacer(minLength: 0)
-//
-////                TapbarView(selectedTab: self.$selectedTab)
-////            .edgesIgnoringSafeArea(.bottom)
-////            .safeAreaInset(edge: .bottom, spacing: 0) {
-////                TapbarView(selectedTab: self.$selectedTab)
-////            }
-//
-//            VStack(spacing: 0) {
-//                if self.selectedTab == .house {
-//                    DateSelectorView(selectedDate: self.$mapEventViewModel.selectedDate, showCalendar: self.$showCalendar)
-//                }
-//
-//                Spacer()
-//
-//                if self.selectedTab == .house {
-//                    MapSwitchButtonView()
-//                        .padding(.bottom, 70)
-//                        .padding(.bottom, getSafeAreaBottom())
-//                }
-//            }
-//            .padding(.vertical, getSafeAreaTop())
-//        }
-//    }
-//}
-
 struct MainEventInfoView: View {
 
     @EnvironmentObject var routeViewModel: RouteViewModel
     @EnvironmentObject var mapEventViewModel: MapEventViewModel
     @EnvironmentObject var locationManager: LocationManager
     @EnvironmentObject var eventViewModel: EventViewModel
+    @EnvironmentObject var loginModel: LoginModel
 
     @State private var selectedTab: Tab = .house
     @State private var showCalendar = false
+    @State var overlayContentBottomHeight: CGFloat = 0
     
     private let size = UIScreen.main.bounds.size
 
@@ -106,47 +29,52 @@ struct MainEventInfoView: View {
                     switch self.selectedTab {
                     case .house:
                         ZStack {
-                            EventMapView()
+//                            EventMapView()
+                            EventAppleMapView()
                             
                             CustomSheet {
-                                MainInfoView()
+                                MainInfoView(overlayContentBottomHeight: self.$overlayContentBottomHeight)
                             }
                         }
                     case .bookmark:
-                        SavedEventsView()
+                        SavedEventsView(overlayContentBottomHeight: self.$overlayContentBottomHeight)
                         //            case .book:
                     case .heart:
-                        OrganizerView()
+                        OrganizerView(overlayContentBottomHeight: self.$overlayContentBottomHeight)
                     case .person:
-                        PreferencesView()
+                        PreferencesView(overlayContentBottomHeight: self.$overlayContentBottomHeight)
                     }
                 }
                 .frame(maxHeight: .infinity)
                 
                 Spacer(minLength: 0)
                 
-                if self.selectedTab == .house {
-                    TapbarView(selectedTab: self.$selectedTab)
-                        .overlay(
-                            MapSwitchButtonView()
-                                .offset(y: -self.size.height / 12)
-                            , alignment: .top
-                        )
-                }
-                else {
-                    TapbarView(selectedTab: self.$selectedTab)
-                }
+//                TapbarView(selectedTab: self.$selectedTab)
             }
             .edgesIgnoringSafeArea(.bottom)
 
             VStack(spacing: 0) {
                 if self.selectedTab == .house {
-                    DateSelectorView(selectedDate: self.$mapEventViewModel.selectedDate, showCalendar: self.$showCalendar)
+                    HStack {
+                        Spacer()
+                        DateSelectorView(selectedDate: self.$mapEventViewModel.selectedDate, showCalendar: self.$showCalendar)
+                        MapSwitchButtonView()
+                            .padding(.top, showCalendar ? -300 : 0)
+                    }
+                    .padding(.top, getSafeAreaTop())
+
                 }
 
                 Spacer()
+                
+                TapBarView2(selectedTab: self.$selectedTab)
+                    .padding(.bottom, getSafeAreaBottom())
+                    .readHeight {
+                        self.overlayContentBottomHeight = $0
+                        self.overlayContentBottomHeight += 20
+                        print("tapbar height", $0)
+                    }
             }
-            .padding(.vertical, getSafeAreaTop())
         }
         .onChange(of: self.mapEventViewModel.selectedDate) { newValue in
             let dateFormatter = DateFormatter()
@@ -159,6 +87,10 @@ struct MainEventInfoView: View {
             else {
                 print("date is already loaded")
             }
+        }
+        .onAppear {
+            self.eventViewModel.getAllParticipatedEvents(
+                userID: self.loginModel.user!.uid)
         }
     }
 }

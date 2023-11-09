@@ -16,9 +16,16 @@ struct CustomDatePicker: View {
     @State var monthName: String = ""
     
     @EnvironmentObject var eventViewModel: EventViewModel
+    @EnvironmentObject var mapEventViewModel: MapEventViewModel
     
     let columns = Array(repeating: GridItem(.flexible()), count: 7)
     let days: [String] = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"]
+    
+    var string_date: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        return dateFormatter.string(from: self.mapEventViewModel.selectedDate)
+    }
     
     var body: some View {
         VStack(spacing: 10) {
@@ -86,7 +93,7 @@ struct CustomDatePicker: View {
                     VStack(spacing: 8) {
                         ForEach(self.eventViewModel.events) { singleEvent in
                             if ( (isSameDay(date1: singleEvent.date, date2: currentDate))
-                                 && (self.eventViewModel.participations[singleEvent.hash_value] == true) ) {
+                                 && (self.eventViewModel.participations[self.string_date]?[singleEvent.hash_value] == true) ) {
                                 HStack {
                                     Image(uiImage: singleEvent.image ?? UIImage(named: "noimage")!)
                                         .resizable()
@@ -130,6 +137,13 @@ struct CardView: View {
     @Binding var currentDate: Date
     
     @EnvironmentObject var eventViewModel: EventViewModel
+    @EnvironmentObject var mapEventViewModel: MapEventViewModel
+    
+    var string_date: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        return dateFormatter.string(from: self.mapEventViewModel.selectedDate)
+    }
     
     var body: some View {
         VStack {
@@ -137,7 +151,7 @@ struct CardView: View {
                 
                 if let singleEvent = self.eventViewModel.events.first(where: { singleEvent in
                     return ( (isSameDay(date1: value.date, date2: singleEvent.date))
-                             && (self.eventViewModel.participations[singleEvent.hash_value] == true) )
+                             && (self.eventViewModel.participations[self.string_date]?[singleEvent.hash_value] == true) )
                 }) {
                     Text("\(value.day)")
                         .font(.title3.bold())

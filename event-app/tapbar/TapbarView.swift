@@ -52,6 +52,46 @@ struct TapbarView: View {
     }
 }
 
+struct TapBarView2: View {
+    
+    @Binding var selectedTab: Tab
+
+    private let size = UIScreen.main.bounds.size
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack() {
+                ForEach(Tab.allCases, id: \.rawValue) { tab in
+                    Spacer()
+                    Image(systemName: tab.rawValue + ".fill")
+                        .foregroundColor(selectedTab == tab ? .blue : Color.black.opacity(0.5))
+                        .font(.system(size: 22))
+                        .padding(3)
+                        .onTapGesture {
+                            self.selectedTab = tab
+                            print("tapped new tab")
+                        }
+                    Spacer()
+                }
+            }
+            .padding(.vertical, 5)
+        }
+        .background(RemoveBackgroundColor())
+        .background(
+            ZStack {
+                Color.clear
+                    .background(BlurView(style: .systemUltraThinMaterialDark))
+                    .cornerRadius(10)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.black.opacity(0.5), lineWidth: 1))
+                
+        })
+        .frame(height: 30)
+        .padding(.horizontal, 20)
+    }
+}
+
 struct Blur: UIViewRepresentable {
     var style: UIBlurEffect.Style = .systemMaterial
     func makeUIView(context: Context) -> UIVisualEffectView {

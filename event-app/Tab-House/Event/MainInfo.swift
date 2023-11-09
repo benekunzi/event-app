@@ -7,8 +7,11 @@
 
 import Foundation
 import SwiftUI
+import MapKit
 
 struct MainInfoView: View {
+    
+    @Binding var overlayContentBottomHeight: CGFloat
     
     @EnvironmentObject var routeViewModel: RouteViewModel
     @EnvironmentObject var mapEventViewModel: MapEventViewModel
@@ -28,6 +31,7 @@ struct MainInfoView: View {
                             Button {
                                 //                        self.locationManager.showRouteToEvent(event: event, locationManager: locationManager.locationManager, mapView: self.locationManager.mapView!)
                                 self.mapEventViewModel.selectedEvent = event
+                                self.mapEventViewModel.region = MKCoordinateRegion(center: event.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
                             } label: {
                                 VStack(alignment: .leading) {
                                     VStack {
@@ -65,6 +69,7 @@ struct MainInfoView: View {
                             }
                         }
                     }
+                    Spacer(minLength: self.overlayContentBottomHeight + 10)
                 }
 //                
 //                TopView()

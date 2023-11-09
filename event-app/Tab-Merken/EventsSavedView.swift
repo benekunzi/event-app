@@ -11,27 +11,31 @@ import SwiftUI
 
 struct SavedEventsView: View {
     
+    @Binding var overlayContentBottomHeight: CGFloat
+    
     @State var currentDate: Date = Date()
-    @EnvironmentObject var loginModel: LoginModel
     @EnvironmentObject var eventViewModel: EventViewModel
+    @EnvironmentObject var mapEventViewModel: MapEventViewModel
     
     var body: some View {
         NavigationView {
             VStack {
-                //            CustomDatePicker(currentDate: self.$currentDate)
-                EventFinderView()
+                EventFinderView(overlayContentBottomHeight: self.$overlayContentBottomHeight)
             }
             .navigationBarBackButtonHidden(true)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .padding(.top, getSafeAreaTop())
         .onAppear{
-            self.eventViewModel.getAllParticipatedEvents(userID: self.loginModel.user!.uid)
+            self.eventViewModel.downloadAllParticipatedEvents()
+            
         }
     }
 }
 
 struct EventFinderView: View {
+    
+    @Binding var overlayContentBottomHeight: CGFloat
 
     @State var selectedDate: Date = Date()
     @State var overlayContentHeight: CGFloat = 0
@@ -54,6 +58,7 @@ struct EventFinderView: View {
                         size: self.size,
                         scrollViewProxy: proxy)
                 }
+                Spacer(minLength: self.overlayContentBottomHeight + 10.0)
             }
             .background(
                 ZStack{
@@ -73,6 +78,7 @@ struct EventFinderView: View {
                                   overlayContentHeight: self.$overlayContentHeight,
                                   searchText: self.$searchText)
         }
+        .edgesIgnoringSafeArea(.bottom)
     }
 }
 
@@ -100,24 +106,10 @@ struct EventFinderScrollViewContent: View {
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 8) {
             ForEach(eventsGroupedByDate.sorted(by: { $0.key < $1.key }), id: \.key) { date, eventsInDate in
-                if let firstEvent = eventsInDate.first(where: { event in
-                    return eventViewModel.participations[event.hash_value] == true
+                if let _ = eventsInDate.first(where: { event in
+                    return self.eventViewModel.participations[self.transformDate(date: date)]?[event.hash_value] == true
                 }) {
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text(date, style: .date)
-                            .foregroundColor(.white)
-                            .padding(.vertical, 5)
-
-                        ForEach(eventsInDate) { event in
-                            if eventViewModel.participations[event.hash_value] == true {
-                                EventRowView(event: event, size: size)
-                                    .onTapGesture {
-                                        mapEventViewModel.selectedEvent = event
-                                    }
-                            }
-                        }
-                    }
-                    .id(Int(self.calendar.startOfDay(for: date).timeIntervalSince1970))
+                    EventFinderScrollViewDetailContent(date: date, eventsInDate: eventsInDate, size: self.size, calendar: self.calendar)
                 }
             }
             .padding(.horizontal)
@@ -128,6 +120,61 @@ struct EventFinderScrollViewContent: View {
                 scrollViewProxy.scrollTo(Int(calendar.startOfDay(for: selectedDate).timeIntervalSince1970), anchor: .bottom)
             }
         }
+    }
+    
+    private func transformDate(date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        return dateFormatter.string(from: date)
+    }
+}
+
+struct EventFinderScrollViewDetailContent: View {
+    
+    let date: Date
+    let eventsInDate: [Event]
+    let size: CGSize
+    let calendar: Calendar
+    
+    
+    @EnvironmentObject var eventViewModel: EventViewModel
+    @EnvironmentObject var mapEventViewModel: MapEventViewModel
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text(date, style: .date)
+                .foregroundColor(.white)
+                .padding(.vertical, 5)
+
+            InnerLoop(eventsInDate: eventsInDate, size: size, date: date)
+        }
+        .id(Int(self.calendar.startOfDay(for: self.date).timeIntervalSince1970))
+    }
+}
+
+struct InnerLoop: View {
+    let eventsInDate: [Event]
+    let size: CGSize
+    let date: Date
+    
+    @EnvironmentObject var eventViewModel: EventViewModel
+    @EnvironmentObject var mapEventViewModel: MapEventViewModel
+    
+    var body: some View {
+        ForEach(eventsInDate) { event in
+            if (eventViewModel.participations[self.transformDate(date: date)]?[event.hash_value] != nil) == true {
+                EventRowView(event: event, size: size)
+                    .onTapGesture {
+                        mapEventViewModel.selectedEvent = event
+                    }
+            }
+        }
+    }
+    
+    private func transformDate(date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        return dateFormatter.string(from: date)
     }
 }
 
@@ -309,7 +356,7 @@ struct EventFinderHeaderView: View {
                             }
                         })
                         .animation(.easeInOut(duration: 0.2))
-                        .preferredColorScheme(.light)
+                        .preferredColorScheme(.dark)
                 }
             }
             .readHeight {
@@ -326,7 +373,7 @@ struct EventFinderHeaderView: View {
             Divider()
         }
         .background(RemoveBackgroundColor())
-        .background(BlurView(style: .systemUltraThinMaterialLight))
+        .background(BlurView(style: .systemUltraThinMaterialDark))
         .frame(height: UIScreen.main.bounds.size.height / 9)
         .edgesIgnoringSafeArea(.top)
     }

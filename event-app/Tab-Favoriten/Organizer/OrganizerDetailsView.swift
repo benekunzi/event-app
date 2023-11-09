@@ -10,6 +10,7 @@ import SwiftUI
 
 struct OrganizerDetailView: View {
     
+    @Binding var overlayContentBottomHeight: CGFloat
     let organizer: Organizer
     var safeArea: EdgeInsets
     var size: CGSize
@@ -84,13 +85,15 @@ struct OrganizerDetailView: View {
                     }
                 }
                 .padding(.horizontal)
-                .background(Color.white)
+                .background(Color.black)
             }
             .padding(.bottom)
             .overlay(HeaderView(), alignment: .top)
+            
+            Spacer(minLength: self.overlayContentBottomHeight + 10.0)
         }
         .gesture(DragGesture(minimumDistance: 20))
-        .background(Color.white)
+        .background(Color.black)
         .navigationBarHidden(true)
         .coordinateSpace(name: "SCROLL")
     }
@@ -130,7 +133,7 @@ struct OrganizerDetailView: View {
                         .background(
                             ZStack {
                                 Color.clear
-                                    .background(BlurView(style: .systemUltraThinMaterialLight))
+                                    .background(BlurView(style: .systemUltraThinMaterialDark))
                                     .cornerRadius(100)
                                     .overlay(Circle()
                                         .stroke(Color.clear, lineWidth: 1))
@@ -157,7 +160,7 @@ struct OrganizerDetailView: View {
             .padding(.horizontal, 20)
             .padding(.bottom, 15)
             .background(RemoveBackgroundColor())
-            .background(BlurView(style: .systemUltraThinMaterialLight).opacity(-titleProgress > 0.75 ? 1 : 0))
+            .background(BlurView(style: .systemUltraThinMaterialDark).opacity(-titleProgress > 0.75 ? 1 : 0))
 //            .background(Color.white.opacity(-titleProgress > 0.75 ? 1 : 0))
             .animation(.easeInOut(duration: 0.25), value: -titleProgress > 0.75)
             .offset(y: -minY)

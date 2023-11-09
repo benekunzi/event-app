@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MapKit
 
 class MapEventViewModel: ObservableObject {
     // for event info view
@@ -14,4 +15,5 @@ class MapEventViewModel: ObservableObject {
     @Published var selectedEvent: Event?
     @Published var shouldUpdateAnnotations: Bool = false
     @Published var presentEventInfoSheet: Bool = false
+    @Published var region: MKCoordinateRegion = MKCoordinateRegion()
 }

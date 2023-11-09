@@ -123,48 +123,51 @@ struct RouteOptionsView: View {
     let imageSize: CGFloat = UIScreen.main.bounds.width / 21.83
     
     var body: some View {
-        VStack(alignment: .leading) {
-            ForEach(Array(self.locationManager.eventCoordinates.routes.enumerated()), id: \.offset) { routeIndex, route in
-                Button {
-                    self.routeViewModel.routeIndex = routeIndex
-                    if let mapView = self.locationManager.mapView {
-                        self.locationManager.drawRoute(eventCoordinates: self.locationManager.eventCoordinates, mapView: mapView, routeIndex: self.routeViewModel.routeIndex)
-                    }
-                    else {
-                        print("no mapView")
-                    }
-                } label: {
-                    VStack (alignment: .leading){
-                        if routeIndex == self.routeViewModel.routeIndex {
-                            HStack {
-                                Text("\(route.total_duration) Min.")
-                                    .font(.system(size: 25))
-                                    .bold()
-                                    .foregroundColor(.black)
-                                Spacer()
-                                Image(systemName: "map")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .foregroundColor(Color.blue)
-                                    .frame(width: imageSize, height: imageSize)
-                            }
-                        }
-                        else {
-                            Text("\(route.total_duration) Min.")
-                                .font(.system(size: 25))
-                                .bold()
-                                .foregroundColor(.black)
-                        }
-                        HStack(spacing: 5) {
-                            ForEach(Array(route.steps.enumerated()), id: \.element) { index, step in
-                                StepInfoView(index: index, step: step, stepsCount: route.steps.count, arrivalTime: route.arrivalTime, departureTime: route.departureTime)
-                            }
-                        }
-                    }
-                }
-                Divider()
-            }
+        VStack {
+            Text("")
         }
+//        VStack(alignment: .leading) {
+//            ForEach(Array(self.locationManager.eventCoordinates.routes.enumerated()), id: \.offset) { routeIndex, route in
+//                Button {
+////                    self.routeViewModel.routeIndex = routeIndex
+////                    if let mapView = self.locationManager.mapView {
+////                        self.locationManager.drawRoute(eventCoordinates: self.locationManager.eventCoordinates, mapView: mapView, routeIndex: self.routeViewModel.routeIndex)
+////                    }
+////                    else {
+////                        print("no mapView")
+////                    }
+//                } label: {
+//                    VStack (alignment: .leading){
+//                        if routeIndex == self.routeViewModel.routeIndex {
+//                            HStack {
+//                                Text("\(route.total_duration) Min.")
+//                                    .font(.system(size: 25))
+//                                    .bold()
+//                                    .foregroundColor(.black)
+//                                Spacer()
+//                                Image(systemName: "map")
+//                                    .resizable()
+//                                    .aspectRatio(contentMode: .fit)
+//                                    .foregroundColor(Color.blue)
+//                                    .frame(width: imageSize, height: imageSize)
+//                            }
+//                        }
+//                        else {
+//                            Text("\(route.total_duration) Min.")
+//                                .font(.system(size: 25))
+//                                .bold()
+//                                .foregroundColor(.black)
+//                        }
+//                        HStack(spacing: 5) {
+//                            ForEach(Array(route.steps.enumerated()), id: \.element) { index, step in
+//                                StepInfoView(index: index, step: step, stepsCount: route.steps.count, arrivalTime: route.arrivalTime, departureTime: route.departureTime)
+//                            }
+//                        }
+//                    }
+//                }
+//                Divider()
+//            }
+//        }
         .frame(maxWidth: .infinity)
         .padding()
         .background(Color.white)

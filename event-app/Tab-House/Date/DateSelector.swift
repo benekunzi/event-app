@@ -51,20 +51,20 @@ struct DateSelectorView: View {
                         .padding(.trailing, 8)
                 })
             }
+            .frame(width: 260)
             .background(RemoveBackgroundColor())
             .foregroundColor(Color.black.opacity(0.9))
-            .padding(.top, showCalendar ? 50 : 0)
             .background(
                 ZStack {
                     Color.clear
-                        .background(BlurView(style: .systemThinMaterialLight))
+                        .background(BlurView(style: .systemUltraThinMaterialDark))
                         .cornerRadius(15)
                         .overlay(
                             RoundedRectangle(cornerRadius: 15)
-                            .stroke(Color.gray, lineWidth: 1))
+                            .stroke(Color.black.opacity(0.5), lineWidth: 1))
                     
                 })
-
+            .padding(.top, showCalendar ? -300 : 0)
             
             if showCalendar {
                 DatePicker("", selection: $selectedDate, displayedComponents: .date)
@@ -72,7 +72,17 @@ struct DateSelectorView: View {
                     .environment(\.calendar, .gregorianWithMondayFirst)
                     .frame(maxWidth: .infinity)
                     .labelsHidden()
-                    .background(Color.white)
+                    .background(RemoveBackgroundColor())
+                    .background(
+                        ZStack {
+                            Color.clear
+                                .background(BlurView(style: .systemUltraThinMaterialDark))
+                                .cornerRadius(15)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 15)
+                                    .stroke(Color.black.opacity(0.5), lineWidth: 1))
+                            
+                        })
                     .cornerRadius(12)
                     .padding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
                     .padding(.horizontal, 25)

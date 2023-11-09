@@ -9,8 +9,6 @@ struct ContentView: View {
     @ObservedObject private var routeViewModel: RouteViewModel = RouteViewModel()
     @ObservedObject private var loginModel: LoginModel = LoginModel()
     
-    let date: Date = Date()
-    
     var body: some View {
         VStack(spacing: 0) {
             if self.loginModel.authenticationState == .authenticated {
@@ -18,27 +16,22 @@ struct ContentView: View {
                     .ignoresSafeArea()
                     .sheet(item: self.$mapEventViewModel.selectedEvent) { event in
                         EventInfoView(event: event, onRouteButtonPressed: {
-                            if let mapView = self.locationManager.mapView{
-                                self.routeViewModel.selectedEvent = event
-                                self.mapEventViewModel.selectedEvent = nil
-                                
+                            self.routeViewModel.selectedEvent = event
+                            self.mapEventViewModel.selectedEvent = nil
+                            
 //                                self.locationManager.drawRoute(eventCoordinates: self.locationManager.eventCoordinates, mapView: mapView, routeIndex: self.routeViewModel.routeIndex)
-                                
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                                    self.mapEventViewModel.showTodaysEvents = false
-                                    self.routeViewModel.showRouteInfo = true
-                                    self.routeViewModel.routeIndex = 0
-                                }
-                            }
-                            else {
-                                print("no mapview in eventCoordinates")
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                                self.mapEventViewModel.showTodaysEvents = false
+                                self.routeViewModel.showRouteInfo = true
+                                self.routeViewModel.routeIndex = 0
                             }
                         })
                         .onAppear {
-                            self.locationManager.selectedMarker?.map = nil
+//                            self.locationManager.selectedMarker?.map = nil
                         }
                         .onDisappear {
-                            self.locationManager.selectedMarker?.map = self.locationManager.mapView
+//                            self.locationManager.selectedMarker?.map = self.locationManager.mapView
                             self.mapEventViewModel.selectedEvent = nil
                         }
                     }
@@ -48,7 +41,7 @@ struct ContentView: View {
                     .ignoresSafeArea()
             }
         }
-        .preferredColorScheme(.light)
+        .preferredColorScheme(.dark)
         .environment(\.locale, Locale(identifier: "de"))
         .environmentObject(self.locationManager)
         .environmentObject(self.mapEventViewModel)
@@ -56,8 +49,7 @@ struct ContentView: View {
         .environmentObject(self.eventViewModel)
         .environmentObject(self.loginModel)
         .onAppear {
-            self.locationManager.checkIfLocationServiceIsEnabled()
-            self.eventViewModel.fetchEvents(date: self.date){}
+            self.eventViewModel.fetchEvents(date: self.mapEventViewModel.selectedDate){}
             self.eventViewModel.fetchOrganizer {}
             
             print("DEVICE VALUES")
@@ -65,6 +57,5 @@ struct ContentView: View {
             print("height", UIScreen.main.bounds.size.height)
             print("--------------")
         }
-        
     }
 }

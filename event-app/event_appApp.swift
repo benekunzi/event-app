@@ -15,7 +15,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
   func application(_ application: UIApplication,
                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
       FirebaseApp.configure()
-      GMSServices.provideAPIKey(API_KEY)
+      DispatchQueue.main.async {
+          GMSServices.provideAPIKey(API_KEY)
+      }
     return true
   }
 }

@@ -51,11 +51,12 @@ struct EventInfoView: View {
                         
                         ZStack {
                             // Your map view
-                            EventMapPreviewView(singleEvent: self.event)
-                                .frame(height: 200)
-                                .cornerRadius(20)
-                                .padding(.horizontal)
-                                .allowsHitTesting(false) // Disable hit testing for the map
+                            EventAppleMapPreviewView(event: [self.event])
+//                            EventMapPreviewView(singleEvent: self.event)
+                            .frame(height: 200)
+                            .cornerRadius(20)
+                            .padding(.horizontal)
+                            .allowsHitTesting(false) // Disable hit testing for the map
                             
                             // Overlay a transparent view to capture taps
                             Rectangle()
@@ -78,8 +79,10 @@ struct EventInfoView: View {
                             self.eventViewModel.updateParticipation(
                                 userID: self.loginModel.user!.uid,
                                 hash: self.event.hash_value,
-                                status: self.eventLiked)
-                            self.eventViewModel.getAllParticipatedEvents(userID: self.loginModel.user!.uid)
+                                status: self.eventLiked,
+                                date: self.mapEventViewModel.selectedDate)
+                            self.eventViewModel.getAllParticipatedEvents(
+                                userID: self.loginModel.user!.uid)
                         }) {
                             if !self.participationStatus {
                                 HStack {
@@ -127,12 +130,20 @@ struct EventInfoView: View {
             .frame(width: proxy.size.width)
         }
         .onAppear {
-            self.participationStatus = self.eventViewModel.participations[event.hash_value] == true
-            self.eventLiked = self.eventViewModel.participations[event.hash_value] == true
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            let selectedDate = dateFormatter.string(from: self.mapEventViewModel.selectedDate)
+            
+            self.participationStatus = self.eventViewModel.participations[selectedDate]?[event.hash_value] == true
+            self.eventLiked = self.eventViewModel.participations[selectedDate]?[event.hash_value] == true
         }
         .onChange(of: self.eventViewModel.participations) { newValue in
-            self.participationStatus = self.eventViewModel.participations[event.hash_value] == true
-            self.eventLiked = self.eventViewModel.participations[event.hash_value] == true
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            let selectedDate = dateFormatter.string(from: self.mapEventViewModel.selectedDate)
+            
+            self.participationStatus = self.eventViewModel.participations[selectedDate]?[event.hash_value] == true
+            self.eventLiked = self.eventViewModel.participations[selectedDate]?[event.hash_value] == true
         }
     }
 }

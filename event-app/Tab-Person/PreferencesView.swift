@@ -10,6 +10,8 @@ import SwiftUI
 
 struct PreferencesView: View {
     
+    @Binding var overlayContentBottomHeight: CGFloat
+    
     @EnvironmentObject var loginModel: LoginModel
     
     var body: some View {
@@ -31,7 +33,7 @@ struct PreferencesView: View {
                 Spacer()
             }
         }
-        .padding(.bottom)
-        .background(Color.white)
+        .padding(.bottom, self.overlayContentBottomHeight + 10)
+        .background(Color.black)
     }
 }

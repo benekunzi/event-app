@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import MapKit
 
 func getSafeAreaTop()->CGFloat{
     let keyWindow = UIApplication.shared.connectedScenes
@@ -27,7 +28,7 @@ func getSafeAreaBottom()->CGFloat{
         .first?.windows
         .filter({$0.isKeyWindow}).first
     
-    return -((keyWindow?.safeAreaInsets.bottom) ?? 0.0)
+    return ((keyWindow?.safeAreaInsets.bottom) ?? 0.0)
 }
 
 struct RemoveBackgroundColor: UIViewRepresentable {

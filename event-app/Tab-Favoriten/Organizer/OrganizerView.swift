@@ -9,6 +9,8 @@ import Foundation
 import SwiftUI
 
 struct OrganizerView: View {
+    
+    @Binding var overlayContentBottomHeight: CGFloat
 
     @State var searchText: String = ""
     @State var overlayContentHeight: CGFloat = 0.0
@@ -43,13 +45,13 @@ struct OrganizerView: View {
                     
                     ScrollView(.vertical) {
                         
-                        Spacer(minLength: self.overlayContentHeight)
+                        Spacer(minLength: self.overlayContentHeight + 10)
                         
                         LazyVGrid(columns: self.columns) {
                             ForEach(self.filteredOrganizer) { organizer in
                                 NavigationLink(
                                     destination:
-                                        OrganizerDetailView(organizer: organizer, safeArea: safeArea, size: size)
+                                        OrganizerDetailView(overlayContentBottomHeight: self.$overlayContentBottomHeight, organizer: organizer, safeArea: safeArea, size: size)
                                         .ignoresSafeArea(.container, edges: .top),
                                     label: {
                                         VStack {
@@ -61,11 +63,13 @@ struct OrganizerView: View {
                                                 .foregroundColor(.black)
                                                 .bold()
                                         }
-                                        .padding()
+                                        .padding(.horizontal)
                                     })
                             }
                         }
                         .padding(.horizontal)
+                        
+                        Spacer(minLength: self.overlayContentBottomHeight + 10)
                     }
                     .background(
                         ZStack{
@@ -81,6 +85,8 @@ struct OrganizerView: View {
                                 .blur(radius: 10)
                                 .offset(x: -100, y: 150)
                         })
+                    
+                    .edgesIgnoringSafeArea(.bottom)
         
                     SearchBarView(searchText: self.$searchText, overlayContentHeight: self.$overlayContentHeight)
                 }
@@ -141,7 +147,7 @@ struct SearchBarView: View {
         .padding(.horizontal)
         .padding(.top, getSafeAreaTop())
         .background(RemoveBackgroundColor())
-        .background(BlurView(style: .systemUltraThinMaterialLight))
+        .background(BlurView(style: .systemUltraThinMaterialDark))
         .frame(height: UIScreen.main.bounds.size.height / 8)
         .edgesIgnoringSafeArea(.top)
     }
