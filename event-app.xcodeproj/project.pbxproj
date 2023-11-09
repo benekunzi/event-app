@@ -28,6 +28,8 @@
 		543377A129DA0FD900F32F1D /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 543377A029DA0FD900F32F1D /* LocationManager.swift */; };
 		543377A329DA0FFC00F32F1D /* EventInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 543377A229DA0FFC00F32F1D /* EventInfoView.swift */; };
 		5433F7A629F70D7100548CBB /* MainInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5433F7A529F70D7100548CBB /* MainInfo.swift */; };
+		543807A32AF2D42B00B7E3D7 /* EventAppleMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 543807A22AF2D42B00B7E3D7 /* EventAppleMapView.swift */; };
+		543807A52AF2E38E00B7E3D7 /* EventAppleMapPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 543807A42AF2E38E00B7E3D7 /* EventAppleMapPreviewView.swift */; };
 		5445DBE329E0243000A76A5B /* map_style.json in Resources */ = {isa = PBXBuildFile; fileRef = 5445DBE229E0243000A76A5B /* map_style.json */; };
 		5445DBE629E0282600A76A5B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 5445DBE529E0282600A76A5B /* Alamofire */; };
 		5445DBEB29E0904E00A76A5B /* RouteInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5445DBEA29E0904E00A76A5B /* RouteInfoView.swift */; };
@@ -108,6 +110,8 @@
 		543377A029DA0FD900F32F1D /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		543377A229DA0FFC00F32F1D /* EventInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventInfoView.swift; sourceTree = "<group>"; };
 		5433F7A529F70D7100548CBB /* MainInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainInfo.swift; sourceTree = "<group>"; };
+		543807A22AF2D42B00B7E3D7 /* EventAppleMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventAppleMapView.swift; sourceTree = "<group>"; };
+		543807A42AF2E38E00B7E3D7 /* EventAppleMapPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventAppleMapPreviewView.swift; sourceTree = "<group>"; };
 		5445DBE229E0243000A76A5B /* map_style.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = map_style.json; sourceTree = "<group>"; };
 		5445DBEA29E0904E00A76A5B /* RouteInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteInfoView.swift; sourceTree = "<group>"; };
 		5445DBEC29E093F300A76A5B /* googleDirectionResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = googleDirectionResponse.swift; sourceTree = "<group>"; };
@@ -128,7 +132,7 @@
 		5495A3D12A3230D000B9BC6F /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		54CECDA12AAA6F3500F7BFB0 /* EventMapPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMapPreviewView.swift; sourceTree = "<group>"; };
 		54FBB5302A0C4A07003E2B75 /* DetailedRouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedRouteView.swift; sourceTree = "<group>"; };
-		54FBF3862A2D031D00C521F6 /* MainEventInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainEventInfoView.swift; sourceTree = "<group>"; };
+		54FBF3862A2D031D00C521F6 /* MainEventInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainEventInfoView.swift; sourceTree = "<group>"; usesTabs = 0; };
 		54FBF3892A2D037800C521F6 /* MapEventViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapEventViewModel.swift; sourceTree = "<group>"; };
 		54FBF38B2A2D047300C521F6 /* RouteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteViewModel.swift; sourceTree = "<group>"; };
 		54FC59BE2A9CD327006ADA56 /* helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = helpers.swift; sourceTree = "<group>"; };
@@ -213,12 +217,12 @@
 		5433776629D9EBD800F32F1D /* event-app */ = {
 			isa = PBXGroup;
 			children = (
-				54FBF3852A2D030D00C521F6 /* MainEventInfo */,
 				54FC59C32A9F951D006ADA56 /* Tab-House */,
 				54FC59C02A9CDBC8006ADA56 /* Tab-Person */,
 				54FC59BD2A9CD31B006ADA56 /* Helper-Functions */,
 				54957A0E2A370435006535C5 /* Tab-Merken */,
 				54957A0D2A370422006535C5 /* Tab-Favoriten */,
+				54FBF3852A2D030D00C521F6 /* MainEventInfo */,
 				5495A3CE2A322EA500B9BC6F /* Login */,
 				5453797F2A2F5CA500B381C6 /* DraggableSheet */,
 				5453797C2A2E8A6B00B381C6 /* tapbar */,
@@ -259,14 +263,14 @@
 			path = "event-appUITests";
 			sourceTree = "<group>";
 		};
-		5433779429DA0EA800F32F1D /* Map */ = {
+		5433779429DA0EA800F32F1D /* GoogleMaps */ = {
 			isa = PBXGroup;
 			children = (
 				5433779529DA0EC600F32F1D /* EventMapView.swift */,
 				5445DBE229E0243000A76A5B /* map_style.json */,
 				54CECDA12AAA6F3500F7BFB0 /* EventMapPreviewView.swift */,
 			);
-			path = Map;
+			path = GoogleMaps;
 			sourceTree = "<group>";
 		};
 		5433779729DA0F1500F32F1D /* Date */ = {
@@ -295,6 +299,15 @@
 				543377A029DA0FD900F32F1D /* LocationManager.swift */,
 			);
 			path = LocationManager;
+			sourceTree = "<group>";
+		};
+		543807A12AF2D41400B7E3D7 /* AppleMaps */ = {
+			isa = PBXGroup;
+			children = (
+				543807A22AF2D42B00B7E3D7 /* EventAppleMapView.swift */,
+				543807A42AF2E38E00B7E3D7 /* EventAppleMapPreviewView.swift */,
+			);
+			path = AppleMaps;
 			sourceTree = "<group>";
 		};
 		5445DBE729E0902D00A76A5B /* Route */ = {
@@ -411,8 +424,9 @@
 		54FC59C32A9F951D006ADA56 /* Tab-House */ = {
 			isa = PBXGroup;
 			children = (
+				543807A12AF2D41400B7E3D7 /* AppleMaps */,
 				5445DBE729E0902D00A76A5B /* Route */,
-				5433779429DA0EA800F32F1D /* Map */,
+				5433779429DA0EA800F32F1D /* GoogleMaps */,
 				5433779A29DA0F4B00F32F1D /* Event */,
 				5433779729DA0F1500F32F1D /* Date */,
 			);
@@ -696,6 +710,7 @@
 				5433779929DA0F2500F32F1D /* DateSelector.swift in Sources */,
 				54FC59C22A9CDBFE006ADA56 /* PreferencesView.swift in Sources */,
 				5445DBF629E3AB1300A76A5B /* Subviews.swift in Sources */,
+				543807A52AF2E38E00B7E3D7 /* EventAppleMapPreviewView.swift in Sources */,
 				5445DBED29E093F300A76A5B /* googleDirectionResponse.swift in Sources */,
 				5433F7A629F70D7100548CBB /* MainInfo.swift in Sources */,
 				540D807829DCCE6000BB8216 /* EventViewModel.swift in Sources */,
@@ -706,6 +721,7 @@
 				54CECDA22AAA6F3500F7BFB0 /* EventMapPreviewView.swift in Sources */,
 				5408C6F12AE70F3600F35605 /* htmlExtensions.swift in Sources */,
 				546B00772A8670C700835D6A /* OrganizerClass.swift in Sources */,
+				543807A32AF2D42B00B7E3D7 /* EventAppleMapView.swift in Sources */,
 				54FBB5312A0C4A08003E2B75 /* DetailedRouteView.swift in Sources */,
 				546B007D2A8A4CFB00835D6A /* CustomSheet.swift in Sources */,
 				543377A129DA0FD900F32F1D /* LocationManager.swift in Sources */,
