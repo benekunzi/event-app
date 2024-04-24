@@ -14,8 +14,8 @@
             filePath = "event-app/Tab-House/Event/EventViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "132"
-            endingLineNumber = "132"
+            startingLineNumber = "133"
+            endingLineNumber = "133"
             landmarkName = "getAllParticipatedEvents(userID:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -30,42 +30,10 @@
             filePath = "event-app/Tab-House/Event/EventViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "140"
-            endingLineNumber = "140"
+            startingLineNumber = "141"
+            endingLineNumber = "141"
             landmarkName = "downloadAllParticipatedEvents()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "89F4B491-B966-45EE-84EE-3DF6CB0248BA - 9ddcb7c2ee9efa78"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "event_app.EventViewModel.downloadAllParticipatedEvents() -&gt; ()"
-                  moduleName = "event-app"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/benedictkunzmann/Documents/Xcode/event-app/event-app/Tab-House/Event/EventViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "193"
-                  endingLineNumber = "193"
-                  offsetFromSymbolStart = "376">
-               </Location>
-               <Location
-                  uuid = "89F4B491-B966-45EE-84EE-3DF6CB0248BA - 9ddcb7c2ee9efa78"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "event_app.EventViewModel.downloadAllParticipatedEvents() -&gt; ()"
-                  moduleName = "event-app"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/benedictkunzmann/Documents/Xcode/event-app/event-app/Tab-House/Event/EventViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "193"
-                  endingLineNumber = "193"
-                  offsetFromSymbolStart = "584">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -78,42 +46,10 @@
             filePath = "event-app/Tab-Merken/EventsSavedView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "110"
-            endingLineNumber = "110"
+            startingLineNumber = "112"
+            endingLineNumber = "112"
             landmarkName = "body"
             landmarkType = "24">
-            <Locations>
-               <Location
-                  uuid = "13F5593B-7C3D-444B-A000-317F4038B28B - 3936bc82edc446b0"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (event_app.Event) -&gt; Swift.Bool in closure #2 (Foundation.Date, Swift.Array&lt;event_app.Event&gt;) -&gt; Swift.Optional&lt;event_app.EventFinderScrollViewDetailContent&gt; in closure #1 () -&gt; &lt;&lt;opaque return type of SwiftUI.View.onChange&lt;&#x3c4;_0_0 where &#x3c4;_1_0: Swift.Equatable&gt;(of: &#x3c4;_1_0, perform: (&#x3c4;_1_0) -&gt; ()) -&gt; some&gt;&gt;.0 in event_app.EventFinderScrollViewContent.body.getter : some"
-                  moduleName = "event-app"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/benedictkunzmann/Documents/Xcode/event-app/event-app/Tab-Merken/EventsSavedView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "110"
-                  endingLineNumber = "110"
-                  offsetFromSymbolStart = "204">
-               </Location>
-               <Location
-                  uuid = "13F5593B-7C3D-444B-A000-317F4038B28B - 3936bc82edc446b0"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (event_app.Event) -&gt; Swift.Bool in closure #2 (Foundation.Date, Swift.Array&lt;event_app.Event&gt;) -&gt; Swift.Optional&lt;event_app.EventFinderScrollViewDetailContent&gt; in closure #1 () -&gt; &lt;&lt;opaque return type of SwiftUI.View.onChange&lt;&#x3c4;_0_0 where &#x3c4;_1_0: Swift.Equatable&gt;(of: &#x3c4;_1_0, perform: (&#x3c4;_1_0) -&gt; ()) -&gt; some&gt;&gt;.0 in event_app.EventFinderScrollViewContent.body.getter : some"
-                  moduleName = "event-app"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/benedictkunzmann/Documents/Xcode/event-app/event-app/Tab-Merken/EventsSavedView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "110"
-                  endingLineNumber = "110"
-                  offsetFromSymbolStart = "144">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -126,8 +62,8 @@
             filePath = "event-app/Tab-Merken/EventsSavedView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "164"
-            endingLineNumber = "164"
+            startingLineNumber = "163"
+            endingLineNumber = "163"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -142,8 +78,8 @@
             filePath = "event-app/Tab-Merken/EventsSavedView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "165"
-            endingLineNumber = "165"
+            startingLineNumber = "164"
+            endingLineNumber = "164"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>

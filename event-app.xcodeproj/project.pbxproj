@@ -219,7 +219,7 @@
 			children = (
 				54FC59C32A9F951D006ADA56 /* Tab-House */,
 				54FC59C02A9CDBC8006ADA56 /* Tab-Person */,
-				54FC59BD2A9CD31B006ADA56 /* Helper-Functions */,
+				54FC59BD2A9CD31B006ADA56 /* Helpers */,
 				54957A0E2A370435006535C5 /* Tab-Merken */,
 				54957A0D2A370422006535C5 /* Tab-Favoriten */,
 				54FBF3852A2D030D00C521F6 /* MainEventInfo */,
@@ -404,13 +404,13 @@
 			path = ViewModels;
 			sourceTree = "<group>";
 		};
-		54FC59BD2A9CD31B006ADA56 /* Helper-Functions */ = {
+		54FC59BD2A9CD31B006ADA56 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
 				54FC59BE2A9CD327006ADA56 /* helpers.swift */,
 				5408C6F02AE70F3500F35605 /* htmlExtensions.swift */,
 			);
-			path = "Helper-Functions";
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 		54FC59C02A9CDBC8006ADA56 /* Tab-Person */ = {
@@ -917,6 +917,9 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "event-app.event-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -952,6 +955,9 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "event-app.event-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1101,7 +1107,7 @@
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 10.0.0;
+				minimumVersion = 10.17.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
