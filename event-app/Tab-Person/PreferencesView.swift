@@ -34,6 +34,11 @@ struct PreferencesView: View {
             }
         }
         .padding(.bottom, self.overlayContentBottomHeight + 10)
-        .background(Color.black)
+        .background(                            
+            Image(uiImage: UIImage(named: "background_1")!)
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+            .blur(radius: 15)
+        )
     }
 }

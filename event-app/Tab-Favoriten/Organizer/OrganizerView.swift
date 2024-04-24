@@ -11,6 +11,7 @@ import SwiftUI
 struct OrganizerView: View {
     
     @Binding var overlayContentBottomHeight: CGFloat
+    @Binding var selectedEvent: Event?
 
     @State var searchText: String = ""
     @State var overlayContentHeight: CGFloat = 0.0
@@ -51,7 +52,12 @@ struct OrganizerView: View {
                             ForEach(self.filteredOrganizer) { organizer in
                                 NavigationLink(
                                     destination:
-                                        OrganizerDetailView(overlayContentBottomHeight: self.$overlayContentBottomHeight, organizer: organizer, safeArea: safeArea, size: size)
+                                        OrganizerDetailView(
+                                            overlayContentBottomHeight: self.$overlayContentBottomHeight,
+                                            selectedEvent: self.$selectedEvent,
+                                            organizer: organizer,
+                                            safeArea: safeArea,
+                                            size: size)
                                         .ignoresSafeArea(.container, edges: .top),
                                     label: {
                                         VStack {
@@ -74,16 +80,10 @@ struct OrganizerView: View {
                     .background(
                         ZStack{
                             
-                            LinearGradient(
-                                colors: [self.cyan.opacity(0.7), self.cblue.opacity(0.7)],
-                                startPoint: .top,
-                                endPoint: .bottomTrailing)
-                            
-                            Circle()
-                                .frame(width: self.size.width / 1.5)
-                                .foregroundColor(Color.red.opacity(0.5))
-                                .blur(radius: 10)
-                                .offset(x: -100, y: 150)
+                            Image(uiImage: UIImage(named: "background_4")!)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .blur(radius: 15)
                         })
                     
                     .edgesIgnoringSafeArea(.bottom)
@@ -139,13 +139,13 @@ struct SearchBarView: View {
                     )
                 }
             }
-            .readHeight {
-                self.overlayContentHeight = $0
-            }
             .padding(.bottom)
         }
         .padding(.horizontal)
         .padding(.top, getSafeAreaTop())
+        .readHeight {
+            self.overlayContentHeight = $0
+        }
         .background(RemoveBackgroundColor())
         .background(BlurView(style: .systemUltraThinMaterialDark))
         .frame(height: UIScreen.main.bounds.size.height / 8)

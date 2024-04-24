@@ -1,12 +1,14 @@
 import SwiftUI
+import MapKit
 
 struct EventInfoView: View {
+    @Binding var participations: [String: [String: Bool]]
+    @Binding var region: MKCoordinateRegion
     let event: Event
     let onRouteButtonPressed: () -> Void
     @Environment(\.presentationMode) var presentationMode
     
     @EnvironmentObject var routeViewModel: RouteViewModel
-    @EnvironmentObject var mapEventViewModel: MapEventViewModel
     @EnvironmentObject var locationManager: LocationManager
     @EnvironmentObject var eventViewModel: EventViewModel
     @EnvironmentObject var loginModel: LoginModel
@@ -51,7 +53,7 @@ struct EventInfoView: View {
                         
                         ZStack {
                             // Your map view
-                            EventAppleMapPreviewView(event: [self.event])
+                            EventAppleMapPreviewView(region: self.$region, event: [self.event])
 //                            EventMapPreviewView(singleEvent: self.event)
                             .frame(height: 200)
                             .cornerRadius(20)
@@ -80,7 +82,7 @@ struct EventInfoView: View {
                                 userID: self.loginModel.user!.uid,
                                 hash: self.event.hash_value,
                                 status: self.eventLiked,
-                                date: self.mapEventViewModel.selectedDate)
+                                date: self.event.date)
                             self.eventViewModel.getAllParticipatedEvents(
                                 userID: self.loginModel.user!.uid)
                         }) {
@@ -130,20 +132,12 @@ struct EventInfoView: View {
             .frame(width: proxy.size.width)
         }
         .onAppear {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            let selectedDate = dateFormatter.string(from: self.mapEventViewModel.selectedDate)
-            
-            self.participationStatus = self.eventViewModel.participations[selectedDate]?[event.hash_value] == true
-            self.eventLiked = self.eventViewModel.participations[selectedDate]?[event.hash_value] == true
+            self.participationStatus = self.eventViewModel.participations[transformDate(date: self.event.date)]?[event.hash_value] == true
+            self.eventLiked = self.eventViewModel.participations[transformDate(date: self.event.date)]?[event.hash_value] == true
         }
-        .onChange(of: self.eventViewModel.participations) { newValue in
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            let selectedDate = dateFormatter.string(from: self.mapEventViewModel.selectedDate)
-            
-            self.participationStatus = self.eventViewModel.participations[selectedDate]?[event.hash_value] == true
-            self.eventLiked = self.eventViewModel.participations[selectedDate]?[event.hash_value] == true
+        .onChange(of: self.participations) { newValue in
+            self.participationStatus = self.participations[transformDate(date: self.event.date)]?[event.hash_value] == true
+            self.eventLiked = self.participations[transformDate(date: self.event.date)]?[event.hash_value] == true
         }
     }
 }

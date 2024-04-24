@@ -7,19 +7,18 @@
 import SwiftUI
 
 struct MapSwitchButtonView: View {
-    
+    @Binding var showTodaysEvents: Bool
     @EnvironmentObject var mapEventViewModel: MapEventViewModel
-    @State private var showTodaysEvents: Bool = true
     private let size = UIScreen.main.bounds.size
     
     var body: some View {
         HStack {
             Button {
                 withAnimation(.easeInOut(duration: 0.3)) {
-                    self.mapEventViewModel.showTodaysEvents.toggle()
+                    self.showTodaysEvents.toggle()
                 }
             } label: {
-                Image(systemName: self.mapEventViewModel.showTodaysEvents ? "map.fill" : "list.dash")
+                Image(systemName: self.showTodaysEvents ? "map.fill" : "list.dash")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .background(RemoveBackgroundColor())
@@ -38,7 +37,6 @@ struct MapSwitchButtonView: View {
             }
         }
         .padding(.horizontal)
-        .sync(self.$mapEventViewModel.showTodaysEvents, with: self.$showTodaysEvents)
     }
 }
 

@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import MapKit
 
 struct MainEventInfoView: View {
 
@@ -15,35 +16,64 @@ struct MainEventInfoView: View {
     @EnvironmentObject var locationManager: LocationManager
     @EnvironmentObject var eventViewModel: EventViewModel
     @EnvironmentObject var loginModel: LoginModel
+    
+    @Binding var selectedEvent: Event?
+    @Binding var selectedDate: Date
+    @Binding var selectedRegion: MKCoordinateRegion
 
     @State private var selectedTab: Tab = .house
     @State private var showCalendar = false
+    @State private var showTodaysEvents: Bool = true
     @State var overlayContentBottomHeight: CGFloat = 0
+    @State var userRegion: MKCoordinateRegion = MKCoordinateRegion()
     
     private let size = UIScreen.main.bounds.size
+    private var idiom : UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
                 ZStack {
-                    switch self.selectedTab {
-                    case .house:
+                    
+                    if self.selectedTab == .house {
                         ZStack {
 //                            EventMapView()
-                            EventAppleMapView()
                             
-                            CustomSheet {
-                                MainInfoView(overlayContentBottomHeight: self.$overlayContentBottomHeight)
+                            EventAppleMapView(region: self.$selectedRegion, selectedEvent: self.$selectedEvent, selectedDate: self.$selectedDate, userRegion: self.$userRegion)
+                            
+                            CustomSheet(showTodaysEvents: self.$showTodaysEvents) {
+                                MainInfoView(overlayContentBottomHeight: self.$overlayContentBottomHeight, selectedDate: self.$selectedDate, selectedEvent: self.$selectedEvent, selectedRegion: self.$selectedRegion)
                             }
                         }
-                    case .bookmark:
-                        SavedEventsView(overlayContentBottomHeight: self.$overlayContentBottomHeight)
-                        //            case .book:
-                    case .heart:
-                        OrganizerView(overlayContentBottomHeight: self.$overlayContentBottomHeight)
-                    case .person:
+                    }
+                    else if self.selectedTab == .bookmark {
+                        SavedEventsView(overlayContentBottomHeight: self.$overlayContentBottomHeight, selectedEvent: self.$selectedEvent, selectedRegion: self.$selectedRegion)
+                    }
+                    else if self.selectedTab == .heart {
+                        OrganizerView(overlayContentBottomHeight: self.$overlayContentBottomHeight, selectedEvent: self.$selectedEvent)
+                    }
+                    else if self.selectedTab == .person {
                         PreferencesView(overlayContentBottomHeight: self.$overlayContentBottomHeight)
                     }
+//                    switch self.selectedTab {
+//                    case .house:
+//                        ZStack {
+////                            EventMapView()
+//                            
+//                            EventAppleMapView(region: self.$selectedRegion, selectedEvent: self.$selectedEvent, selectedDate: self.$selectedDate)
+//                            
+//                            CustomSheet(showTodaysEvents: self.$showTodaysEvents) {
+//                                MainInfoView(overlayContentBottomHeight: self.$overlayContentBottomHeight, selectedDate: self.$selectedDate, selectedEvent: self.$selectedEvent, selectedRegion: self.$selectedRegion)
+//                            }
+//                        }
+//                    case .bookmark:
+//                        SavedEventsView(overlayContentBottomHeight: self.$overlayContentBottomHeight, selectedEvent: self.$selectedEvent)
+//                        //            case .book:
+//                    case .heart:
+//                        OrganizerView(overlayContentBottomHeight: self.$overlayContentBottomHeight, selectedEvent: self.$selectedEvent)
+//                    case .person:
+//                        PreferencesView(overlayContentBottomHeight: self.$overlayContentBottomHeight)
+//                    }
                 }
                 .frame(maxHeight: .infinity)
                 
@@ -57,8 +87,8 @@ struct MainEventInfoView: View {
                 if self.selectedTab == .house {
                     HStack {
                         Spacer()
-                        DateSelectorView(selectedDate: self.$mapEventViewModel.selectedDate, showCalendar: self.$showCalendar)
-                        MapSwitchButtonView()
+                        DateSelectorView(selectedDate: self.$selectedDate, showCalendar: self.$showCalendar)
+                        MapSwitchButtonView(showTodaysEvents: self.$showTodaysEvents)
                             .padding(.top, showCalendar ? -300 : 0)
                     }
                     .padding(.top, getSafeAreaTop())
@@ -68,7 +98,7 @@ struct MainEventInfoView: View {
                 Spacer()
                 
                 TapBarView2(selectedTab: self.$selectedTab)
-                    .padding(.bottom, getSafeAreaBottom())
+                    .padding(.bottom, (self.idiom == .pad) ? getSafeAreaBottom()+20 : getSafeAreaBottom())
                     .readHeight {
                         self.overlayContentBottomHeight = $0
                         self.overlayContentBottomHeight += 20
@@ -76,16 +106,13 @@ struct MainEventInfoView: View {
                     }
             }
         }
-        .onChange(of: self.mapEventViewModel.selectedDate) { newValue in
+        .onChange(of: self.selectedDate) { newValue in
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd"
             let todaysDate = dateFormatter.string(from: newValue)
             
             if !self.eventViewModel.loadedEvents.contains(todaysDate) {
                 self.eventViewModel.fetchEvents(date: newValue){}
-            }
-            else {
-                print("date is already loaded")
             }
         }
         .onAppear {

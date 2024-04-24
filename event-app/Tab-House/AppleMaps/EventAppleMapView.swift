@@ -9,35 +9,38 @@ import SwiftUI
 import MapKit
 
 struct EventAppleMapView: View {
+    @Binding var region: MKCoordinateRegion
+    @Binding var selectedEvent: Event?
+    @Binding var selectedDate: Date
+    @Binding var userRegion: MKCoordinateRegion
     
     @EnvironmentObject var routeViewModel: RouteViewModel
     @EnvironmentObject var mapEventViewModel: MapEventViewModel
     @EnvironmentObject var locationManager: LocationManager
     @EnvironmentObject var eventViewModel: EventViewModel
     
-    @State private var region: MKCoordinateRegion = MKCoordinateRegion()
-    
     let size: CGSize = UIScreen.main.bounds.size
     var filteredEvents: [Event] {
-        return eventViewModel.events.filter { $0.date.isSameDay(as: self.mapEventViewModel.selectedDate) }
+        return eventViewModel.events.filter { $0.date.isSameDay(as: self.selectedDate) }
     }
     
     var body: some View {
-        Map(coordinateRegion: self.$region, showsUserLocation: true, annotationItems: self.filteredEvents) { event in
+        Map(coordinateRegion: self.locationManager.binding, showsUserLocation: true, userTrackingMode: .constant(.none), annotationItems: self.filteredEvents) { event in
             MapAnnotation(coordinate: event.coordinate) {
                 Image(uiImage: event.image ?? UIImage(named: "noimage")!)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .frame(width: self.size.width / 14, height: self.size.width / 14)
+                    .frame(width: self.size.width / 18, height: self.size.width / 18)
                     .clipShape(Circle())
                     .onTapGesture {
-                        self.mapEventViewModel.region = MKCoordinateRegion(center: event.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
-                        self.mapEventViewModel.selectedEvent = event
+                        self.region = MKCoordinateRegion(center: event.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+                        self.selectedEvent = event
                     }
+                    .id(event.id)
             }
         }
         .onReceive(self.locationManager.$region) { newValue in
-            self.region = MKCoordinateRegion(center: newValue.center, span: newValue.span)
+            self.userRegion = MKCoordinateRegion(center: newValue.center, span: newValue.span)
         }
     }
 }

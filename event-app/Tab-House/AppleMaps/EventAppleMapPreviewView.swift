@@ -9,6 +9,7 @@ import SwiftUI
 import MapKit
 
 struct EventAppleMapPreviewView: View {
+    @Binding var region: MKCoordinateRegion
     let event: [Event]
     
     @EnvironmentObject var mapEventViewModel: MapEventViewModel
@@ -16,12 +17,12 @@ struct EventAppleMapPreviewView: View {
     let size: CGSize = UIScreen.main.bounds.size
     
     var body: some View {
-        Map(coordinateRegion: self.$mapEventViewModel.region, annotationItems: self.event) { event in
+        Map(coordinateRegion: self.$region, annotationItems: self.event) { event in
             MapAnnotation(coordinate: event.coordinate) {
                 Image(uiImage: event.image ?? UIImage(named: "noimage")!)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .frame(width: self.size.width / 14, height: self.size.width / 14)
+                    .frame(width: self.size.width / 18, height: self.size.width / 18)
                     .clipShape(Circle())
             }
         }

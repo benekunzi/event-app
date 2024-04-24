@@ -18,7 +18,6 @@ class LoginModel: ObservableObject {
     
     @Published var user: User?
     @Published var authenticationState: AuthenticationState = .unauthenticated
-    @Published var loginTab: Bool = false
     
     private var authStateHandle: AuthStateDidChangeListenerHandle?
     

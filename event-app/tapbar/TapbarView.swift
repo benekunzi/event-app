@@ -63,18 +63,22 @@ struct TapBarView2: View {
             HStack() {
                 ForEach(Tab.allCases, id: \.rawValue) { tab in
                     Spacer()
-                    Image(systemName: tab.rawValue + ".fill")
-                        .foregroundColor(selectedTab == tab ? .blue : Color.black.opacity(0.5))
-                        .font(.system(size: 22))
-                        .padding(3)
+                    Rectangle()
+                        .foregroundColor(Color.clear) // Make the rectangle transparent
+                        .contentShape(Rectangle()) // Make sure the hit test area matches the rectangle
                         .onTapGesture {
                             self.selectedTab = tab
-                            print("tapped new tab")
                         }
+                        .background(
+                            Image(systemName: tab.rawValue + ".fill")
+                                .foregroundColor(selectedTab == tab ? .blue : Color.black.opacity(0.5))
+                                .font(.system(size: 22))
+                                .padding(10)
+                        )
                     Spacer()
                 }
             }
-            .padding(.vertical, 5)
+            .padding(.vertical, 10)
         }
         .background(RemoveBackgroundColor())
         .background(
@@ -87,7 +91,7 @@ struct TapBarView2: View {
                         .stroke(Color.black.opacity(0.5), lineWidth: 1))
                 
         })
-        .frame(height: 30)
+        .frame(height: 40)
         .padding(.horizontal, 20)
     }
 }

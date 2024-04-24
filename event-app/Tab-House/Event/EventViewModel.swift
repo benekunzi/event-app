@@ -11,6 +11,7 @@ import FirebaseCore
 import CoreLocation
 import FirebaseStorage
 import UIKit
+import Firebase
 
 class EventViewModel: ObservableObject {
     @Published var events: [Event] = []
@@ -173,9 +174,6 @@ class EventViewModel: ObservableObject {
                         }
 
                     }
-                    else {
-                        print("already downloaded event")
-                    }
                 }
             })
         }
@@ -259,7 +257,7 @@ class EventViewModel: ObservableObject {
             }
 
             imageRef.getData(maxSize: 2 * 1024 * 1024) { data, error in
-                if let error = error {
+                if let _ = error {
 //                    print("Error downloading \(imageType) image: \(error.localizedDescription)")
                     // Try the next image type
                     downloadImageWithNextType(index: index + 1)

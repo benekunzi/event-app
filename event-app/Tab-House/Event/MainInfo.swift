@@ -12,6 +12,9 @@ import MapKit
 struct MainInfoView: View {
     
     @Binding var overlayContentBottomHeight: CGFloat
+    @Binding var selectedDate: Date
+    @Binding var selectedEvent: Event?
+    @Binding var selectedRegion: MKCoordinateRegion
     
     @EnvironmentObject var routeViewModel: RouteViewModel
     @EnvironmentObject var mapEventViewModel: MapEventViewModel
@@ -25,13 +28,13 @@ struct MainInfoView: View {
             ZStack(alignment: .top) {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 20) {
-                        ForEach(eventViewModel.events.filter { $0.date.isSameDay(as: mapEventViewModel.selectedDate) }){ event in
+                        ForEach(eventViewModel.events.filter { $0.date.isSameDay(as: self.selectedDate) }){ event in
                             
                             let (startTime, endTime) = extractStartAndEndTime(timeWindow: event.timeWindow)
                             Button {
                                 //                        self.locationManager.showRouteToEvent(event: event, locationManager: locationManager.locationManager, mapView: self.locationManager.mapView!)
-                                self.mapEventViewModel.selectedEvent = event
-                                self.mapEventViewModel.region = MKCoordinateRegion(center: event.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+                                self.selectedEvent = event
+                                self.selectedRegion = MKCoordinateRegion(center: event.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
                             } label: {
                                 VStack(alignment: .leading) {
                                     VStack {

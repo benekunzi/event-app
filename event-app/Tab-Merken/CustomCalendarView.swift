@@ -10,6 +10,7 @@ import SwiftUI
 
 struct CustomDatePicker: View {
     @Binding var currentDate: Date
+    @Binding var selectedDate: Date
     
     @State var currentMonth: Int = 0
     @State var year: String = ""
@@ -24,7 +25,7 @@ struct CustomDatePicker: View {
     var string_date: String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        return dateFormatter.string(from: self.mapEventViewModel.selectedDate)
+        return dateFormatter.string(from: self.selectedDate)
     }
     
     var body: some View {
@@ -76,7 +77,7 @@ struct CustomDatePicker: View {
             
             LazyVGrid(columns: columns, spacing: 15) {
                 ForEach(extractDate()) { value in
-                    CardView(value: value, currentDate: self.$currentDate)
+                    CardView(value: value, currentDate: self.$currentDate, selectedDate: self.$selectedDate)
                         .background(
                             Capsule()
                                 .fill(.red)
@@ -135,6 +136,7 @@ struct CardView: View {
     
     let value: DateValue
     @Binding var currentDate: Date
+    @Binding var selectedDate: Date
     
     @EnvironmentObject var eventViewModel: EventViewModel
     @EnvironmentObject var mapEventViewModel: MapEventViewModel
@@ -142,7 +144,7 @@ struct CardView: View {
     var string_date: String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        return dateFormatter.string(from: self.mapEventViewModel.selectedDate)
+        return dateFormatter.string(from: self.selectedDate)
     }
     
     var body: some View {

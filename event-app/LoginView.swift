@@ -11,14 +11,20 @@ import SwiftUI
 struct LoginView: View {
     
     @StateObject var loginModel: LoginModel
-    @State var email = ""
-    @State var password = ""
+    @State var email: String = ""
+    @State var password: String = ""
+    @State var loginTab: loginTab = .signIn
     
     let size = UIScreen.main.bounds.size
     
+    enum loginTab: String, CaseIterable {
+        case signIn
+        case signUp
+    }
+    
     var body: some View {
         VStack(spacing: 16) {
-            Picker("", selection: self.$loginModel.loginTab) {
+            Picker("", selection: self.$loginTab) {
                 Text("Log In")
                     .tag(true)
                 Text("Create Account")
@@ -38,13 +44,13 @@ struct LoginView: View {
 //                .frame(width: 280, height: 45, alignment: .center)
             Spacer()
             Button(action: {
-                if self.loginModel.loginTab {
+                if self.loginTab == .signIn {
                     self.loginModel.loginUser(email: self.email, password: self.password)
                 } else {
                     self.loginModel.createUser(email: self.email, password: self.password)
                 }
             }, label: {
-                Text(self.loginModel.loginTab ? "Log In" : "Create Account")
+                Text((self.loginTab == .signIn) ? "Log In" : "Create Account")
                     .foregroundColor(.white)
             })
             .frame(width: self.size.width / 1.4, height: self.size.height / 18.93, alignment: .center)

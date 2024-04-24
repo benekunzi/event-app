@@ -11,6 +11,7 @@ import SwiftUI
 struct OrganizerDetailView: View {
     
     @Binding var overlayContentBottomHeight: CGFloat
+    @Binding var selectedEvent: Event?
     let organizer: Organizer
     var safeArea: EdgeInsets
     var size: CGSize
@@ -61,7 +62,7 @@ struct OrganizerDetailView: View {
                                     }
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .onTapGesture {
-                                        self.mapEventViewModel.selectedEvent = matchedEvent
+                                        self.selectedEvent = matchedEvent
                                     }
                                 }
                             }

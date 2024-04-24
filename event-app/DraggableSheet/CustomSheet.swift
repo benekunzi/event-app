@@ -10,21 +10,24 @@ import SwiftUI
 
 struct CustomSheet<Content: View>: View {
     
+    @Binding var showTodaysEvents: Bool
+    
     var scrollViewContent: () -> Content
     
     @EnvironmentObject var mapEventViewModel: MapEventViewModel
     @State var offset: CGFloat = 0
-    private let maxheight = UIScreen.main.bounds.height / 1.4
+    @State var overlayContentHeight: CGFloat = 0.0
+    private let maxheight = UIScreen.main.bounds.height / 1.3
     
     let size = UIScreen.main.bounds.size
     let cyan: Color = Color("cyan")
     let cblue: Color = Color("cblue")
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             Spacer()
             
-            VStack {
+            VStack(spacing: 0) {
                 HStack {
                     Capsule()
                         .fill(Color.gray)
@@ -36,24 +39,17 @@ struct CustomSheet<Content: View>: View {
                 scrollViewContent()
                     .frame(height: self.maxheight)
             }
+            .readHeight{
+                self.overlayContentHeight = $0
+            }
             .background(
-                ZStack {
-                    LinearGradient(
-                        colors: [self.cyan.opacity(0.9), self.cblue],
-                        startPoint: .top,
-                        endPoint: .bottomTrailing)
-                    Circle()
-                        .frame(width: self.size.width / 1.5)
-                        .foregroundColor(Color.red.opacity(0.5))
-                        .blur(radius: 10)
-                        .offset(x: -100, y: 150)
-                    
-                    Circle()
-                        .frame(width: self.size.width / 1.5)
-                        .foregroundColor(Color.purple.opacity(0.5))
-                        .blur(radius: 10)
-                        .offset(x: 200, y: -150)
-                }.clipShape(CustomCorner(corners: [.topLeft, .topRight]))
+                Image(uiImage: UIImage(named: "background_2")!)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: size.width, height: self.overlayContentHeight)
+                    .opacity(0.7)
+                    .clipShape(CustomCorner(corners: [.topLeft, .topRight]))
+                    .clipped()
             )
             .offset(y: self.offset)
             .gesture(
@@ -61,7 +57,7 @@ struct CustomSheet<Content: View>: View {
                     .onChanged(onChanged(value:))
                     .onEnded(onEnded(value:))
             )
-            .offset(y: self.mapEventViewModel.showTodaysEvents ? 0 : UIScreen.main.bounds.height)
+            .offset(y: self.showTodaysEvents ? 0 : UIScreen.main.bounds.height)
         }
     }
     
@@ -77,7 +73,7 @@ struct CustomSheet<Content: View>: View {
                 let height = self.maxheight
                 
                 if value.translation.height > height / 5 {
-                    self.mapEventViewModel.showTodaysEvents.toggle()
+                    self.showTodaysEvents.toggle()
                 }
                 self.offset = 0
             }

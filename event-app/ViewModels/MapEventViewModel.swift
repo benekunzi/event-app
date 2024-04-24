@@ -9,11 +9,11 @@ import Foundation
 import MapKit
 
 class MapEventViewModel: ObservableObject {
-    // for event info view
-    @Published var showTodaysEvents: Bool = true
-    @Published var selectedDate = Date()
-    @Published var selectedEvent: Event?
-    @Published var shouldUpdateAnnotations: Bool = false
-    @Published var presentEventInfoSheet: Bool = false
-    @Published var region: MKCoordinateRegion = MKCoordinateRegion()
+//    // for event info view
+//    @Published var showTodaysEvents: Bool = true
+//    @Published var selectedDate = Date()
+//    @Published var selectedEvent: Event?
+//    @Published var shouldUpdateAnnotations: Bool = false
+//    @Published var presentEventInfoSheet: Bool = false
+//    @Published var region: MKCoordinateRegion = MKCoordinateRegion()
 }

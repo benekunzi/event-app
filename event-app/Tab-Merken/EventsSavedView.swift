@@ -8,10 +8,13 @@
 
 import Foundation
 import SwiftUI
+import MapKit
 
 struct SavedEventsView: View {
     
     @Binding var overlayContentBottomHeight: CGFloat
+    @Binding var selectedEvent: Event?
+    @Binding var selectedRegion: MKCoordinateRegion
     
     @State var currentDate: Date = Date()
     @EnvironmentObject var eventViewModel: EventViewModel
@@ -20,7 +23,7 @@ struct SavedEventsView: View {
     var body: some View {
         NavigationView {
             VStack {
-                EventFinderView(overlayContentBottomHeight: self.$overlayContentBottomHeight)
+                EventFinderView(overlayContentBottomHeight: self.$overlayContentBottomHeight, selectedEvent: self.$selectedEvent, selectedRegion: self.$selectedRegion)
             }
             .navigationBarBackButtonHidden(true)
         }
@@ -36,6 +39,8 @@ struct SavedEventsView: View {
 struct EventFinderView: View {
     
     @Binding var overlayContentBottomHeight: CGFloat
+    @Binding var selectedEvent: Event?
+    @Binding var selectedRegion: MKCoordinateRegion
 
     @State var selectedDate: Date = Date()
     @State var overlayContentHeight: CGFloat = 0
@@ -55,6 +60,8 @@ struct EventFinderView: View {
                     EventFinderScrollViewContent(
                         searchText: self.$searchText,
                         selectedDate: self.$selectedDate,
+                        selectedEvent: self.$selectedEvent, 
+                        selectedRegion: self.$selectedRegion,
                         size: self.size,
                         scrollViewProxy: proxy)
                 }
@@ -62,17 +69,10 @@ struct EventFinderView: View {
             }
             .background(
                 ZStack{
-                    LinearGradient(
-                        colors: [self.cyan.opacity(0.7), self.cblue.opacity(0.7)],
-                        startPoint: .top,
-                        endPoint: .bottomTrailing)
-                    
-                    RoundedRectangle(cornerRadius: 30, style: .continuous)
-                        .fill(LinearGradient(colors: [Color.purple.opacity(0.5), Color.green.opacity(0.5)], startPoint: .top, endPoint: .leading))
-                        .frame(width: self.size.height / 1.7, height: self.size.height / 1.7)
-                        .blur(radius: 30)
-                        .rotationEffect(.degrees(30))
-                        .offset(x: self.size.width / 1.3)
+                    Image(uiImage: UIImage(named: "background_3")!)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .blur(radius: 25)
                 })
             EventFinderHeaderView(selectedDate: self.$selectedDate,
                                   overlayContentHeight: self.$overlayContentHeight,
@@ -85,6 +85,8 @@ struct EventFinderView: View {
 struct EventFinderScrollViewContent: View {
     @Binding var searchText: String
     @Binding var selectedDate: Date
+    @Binding var selectedEvent: Event?
+    @Binding var selectedRegion: MKCoordinateRegion
     let size: CGSize
     let scrollViewProxy: ScrollViewProxy
 
@@ -107,9 +109,9 @@ struct EventFinderScrollViewContent: View {
         LazyVStack(alignment: .leading, spacing: 8) {
             ForEach(eventsGroupedByDate.sorted(by: { $0.key < $1.key }), id: \.key) { date, eventsInDate in
                 if let _ = eventsInDate.first(where: { event in
-                    return self.eventViewModel.participations[self.transformDate(date: date)]?[event.hash_value] == true
+                    return self.eventViewModel.participations[transformDate(date: date)]?[event.hash_value] == true
                 }) {
-                    EventFinderScrollViewDetailContent(date: date, eventsInDate: eventsInDate, size: self.size, calendar: self.calendar)
+                    EventFinderScrollViewDetailContent(selectedEvent: self.$selectedEvent, selectedRegion: self.$selectedRegion,date: date, eventsInDate: eventsInDate, size: self.size, calendar: self.calendar)
                 }
             }
             .padding(.horizontal)
@@ -121,16 +123,11 @@ struct EventFinderScrollViewContent: View {
             }
         }
     }
-    
-    private func transformDate(date: Date) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        return dateFormatter.string(from: date)
-    }
 }
 
 struct EventFinderScrollViewDetailContent: View {
-    
+    @Binding var selectedEvent: Event?
+    @Binding var selectedRegion: MKCoordinateRegion
     let date: Date
     let eventsInDate: [Event]
     let size: CGSize
@@ -146,13 +143,15 @@ struct EventFinderScrollViewDetailContent: View {
                 .foregroundColor(.white)
                 .padding(.vertical, 5)
 
-            InnerLoop(eventsInDate: eventsInDate, size: size, date: date)
+            InnerLoop(selectedEvent: self.$selectedEvent, selectedRegion: self.$selectedRegion, eventsInDate: eventsInDate, size: size, date: date)
         }
         .id(Int(self.calendar.startOfDay(for: self.date).timeIntervalSince1970))
     }
 }
 
 struct InnerLoop: View {
+    @Binding var selectedEvent: Event?
+    @Binding var selectedRegion: MKCoordinateRegion
     let eventsInDate: [Event]
     let size: CGSize
     let date: Date
@@ -165,7 +164,8 @@ struct InnerLoop: View {
             if (eventViewModel.participations[self.transformDate(date: date)]?[event.hash_value] != nil) == true {
                 EventRowView(event: event, size: size)
                     .onTapGesture {
-                        mapEventViewModel.selectedEvent = event
+                        self.selectedEvent = event
+                        self.selectedRegion = MKCoordinateRegion(center: event.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
                     }
             }
         }
@@ -202,80 +202,6 @@ struct EventRowView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
-
-
-
-//struct EventFinderScrollViewContent: View {
-//    @Binding var selectedDate: Date
-//    @Binding var searchText: String
-//    let size: CGSize
-//    let scrollViewProxy: ScrollViewProxy
-//
-//    @EnvironmentObject var eventViewModel: EventViewModel
-//    @EnvironmentObject var mapEventViewModel: MapEventViewModel
-//
-//    let calendar = Calendar.current
-//
-//    var filteredEvents: [Event] {
-//        if searchText.isEmpty {
-//            return eventViewModel.events
-//        } else {
-//            return eventViewModel.events.filter { event in
-//                return event.title?.lowercased().contains(searchText.lowercased()) ?? false
-//            }
-//        }
-//    }
-//
-//    var body: some View {
-//        LazyVStack(alignment: .leading, spacing: 8) {
-//            ForEach(extractDate()) { value in
-//                if let singleEvent = self.filteredEvents.first(where: { singleEvent in
-//                    return ( (isSameDay(date1: value.date, date2: singleEvent.date))
-//                             && (self.eventViewModel.participations[singleEvent.hash_value] == true) )
-//                }) {
-//                    VStack(alignment: .leading, spacing: 5) {
-//                        Text(value.date, style: .date)
-//                        Divider()
-//                    }
-//                    .foregroundColor(.gray)
-//                    .padding(.vertical, 5)
-//                    .id(Int(self.calendar.startOfDay(for: singleEvent.date).timeIntervalSince1970))
-//                }
-//
-//                ForEach(self.filteredEvents) { event in
-//                    if ((isSameDay(date1: value.date, date2: event.date)) && (self.eventViewModel.participations[event.hash_value] == true) ) {
-//                        HStack {
-//                            Image(uiImage: event.image ?? UIImage(named: "noimage")!)
-//                                .resizable()
-//                                .aspectRatio(contentMode: .fill)
-//                                .frame(width: self.size.width / 6.55,
-//                                       height: self.size.height / 14.2)
-//                            //                                        .frame(width: 60, height: 60) // Adjust size as needed
-//                                .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
-//                            VStack(alignment: .leading, spacing: 10) {
-//                                Text(event.title ?? "event tile")
-//                                    .bold()
-//                                    .font(.system(size: 15))
-//                            }
-//                        }
-//                        .padding(.vertical, 5)
-//                        .frame(maxWidth: .infinity, alignment: .leading)
-//                        .onTapGesture {
-//                            self.mapEventViewModel.selectedEvent = event
-//                        }
-//                    }
-//                }
-//            }
-//            .padding(.horizontal)
-//            .onAppear {
-//                scrollViewProxy.scrollTo(Int(self.calendar.startOfDay(for: selectedDate).timeIntervalSince1970), anchor: .bottom)
-//            }
-//            .onChange(of: self.selectedDate) { _ in
-//                scrollViewProxy.scrollTo(Int(self.calendar.startOfDay(for: selectedDate).timeIntervalSince1970), anchor: .bottom)
-//            }
-//        }
-//    }
-//}
 
 struct EventFinderHeaderView: View {
     
@@ -359,15 +285,15 @@ struct EventFinderHeaderView: View {
                         .preferredColorScheme(.dark)
                 }
             }
-            .readHeight {
-                self.overlayContentHeight = $0
-            }
-
             .frame(maxWidth: .infinity)
             .frame(maxHeight: .infinity)
             .padding(.horizontal)
             .padding(.top, getSafeAreaTop())
             .padding(.vertical, 5)
+            
+            .readHeight {
+                self.overlayContentHeight = $0
+            }
             
             Spacer(minLength: 0)
             Divider()
