@@ -21,12 +21,12 @@ struct MapSwitchButtonView: View {
                 Image(systemName: self.showTodaysEvents ? "map.fill" : "list.dash")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .font(.system(size: 12).bold())
+                    .font(.system(size: 10).bold())
                     .frame(height: 18)
-                    .padding(10)
-                    .foregroundColor(.white)
+                    .padding(8)
+                    .foregroundColor(Color("Purple"))
                     .background(
-                        Color("Purple")
+                        Color("Light Purple")
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                         )
             }
