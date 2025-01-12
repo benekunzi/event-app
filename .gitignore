@@ -3,6 +3,8 @@ event-app.xcworkspace/
 event-app.xcodeproj/
 event-app/important.swift
 Bilder/
+Pods/
 Language-Symbol.svg
 event-app/GoogleService-Info.plist
 event-app/Assets.xcassets/
+event-app/LocationManager/
