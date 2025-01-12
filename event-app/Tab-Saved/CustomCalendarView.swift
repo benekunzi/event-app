@@ -93,7 +93,7 @@ struct CustomDatePicker: View {
                 ScrollView {
                     VStack(spacing: 8) {
                         ForEach(self.eventViewModel.events) { singleEvent in
-                            if ( (isSameDay(date1: singleEvent.date, date2: currentDate))
+                            if ( (isSameDay(date1: singleEvent.startDate, date2: currentDate))
                                  && (self.eventViewModel.participations[self.string_date]?[singleEvent.hash_value] == true) ) {
                                 HStack {
                                     Image(uiImage: singleEvent.image ?? UIImage(named: "noimage")!)
@@ -102,7 +102,7 @@ struct CustomDatePicker: View {
                                         .frame(width: 60, height: 60) // Adjust size as needed
                                         .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
                                     VStack(alignment: .leading, spacing: 10) {
-                                        Text(singleEvent.title ?? "event tile")
+                                        Text(singleEvent.name)
                                             .bold()
                                             .font(.system(size: 15))
                                     }
@@ -152,16 +152,16 @@ struct CardView: View {
             if value.day != -1 {
                 
                 if let singleEvent = self.eventViewModel.events.first(where: { singleEvent in
-                    return ( (isSameDay(date1: value.date, date2: singleEvent.date))
+                    return ( (isSameDay(date1: value.date, date2: singleEvent.startDate))
                              && (self.eventViewModel.participations[self.string_date]?[singleEvent.hash_value] == true) )
                 }) {
                     Text("\(value.day)")
                         .font(.title3.bold())
-                        .foregroundColor(isSameDay(date1: currentDate, date2: singleEvent.date) ? .white : .black)
+                        .foregroundColor(isSameDay(date1: currentDate, date2: singleEvent.startDate) ? .white : .black)
                         .frame(maxWidth: .infinity)
                     Spacer()
                     Circle()
-                        .fill(isSameDay(date1: currentDate, date2: singleEvent.date) ? .white : .red)
+                        .fill(isSameDay(date1: currentDate, date2: singleEvent.startDate) ? .white : .red)
                         .frame(width: 8, height: 8)
                 } else {
                     Text("\(value.day)")

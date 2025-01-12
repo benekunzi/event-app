@@ -22,11 +22,11 @@ struct EventFinderScrollViewContent: View {
 
     var eventsGroupedByDate: [Date: [Event]] {
         if searchText.isEmpty {
-            return Dictionary(grouping: eventViewModel.events, by: { calendar.startOfDay(for: $0.date) })
+            return Dictionary(grouping: eventViewModel.events, by: { calendar.startOfDay(for: $0.startDate) })
         } else {
             return Dictionary(grouping: eventViewModel.events.filter { event in
-                return event.title?.lowercased().contains(searchText.lowercased()) ?? false
-            }, by: { calendar.startOfDay(for: $0.date) })
+                return event.name.lowercased().contains(searchText.lowercased())
+            }, by: { calendar.startOfDay(for: $0.startDate) })
         }
     }
 
@@ -107,7 +107,9 @@ struct InnerLoop: View {
                     }
                 )
                 NavigationLink {
-                    EventInfoView(overlayContentBottomHeight: self.$overlayContentBottomHeight, selectedEvent: self.$selectedEvent, selectedRegion: self.$selectedRegion)
+                    EventInfoView(overlayContentBottomHeight: self.$overlayContentBottomHeight,
+                                  selectedEvent: self.$selectedEvent,
+                                  selectedRegion: self.$selectedRegion)
                 } label: {
                     EventRowView(event: eventBinding, size: size)
                 }

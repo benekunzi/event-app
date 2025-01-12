@@ -6,150 +6,118 @@
 //
 
 import Foundation
+import MapKit
 import SwiftUI
 
 struct OrganizerView: View {
     
     @Binding var overlayContentBottomHeight: CGFloat
-    @Binding var selectedEvent: Event?
-
+    @Binding var selectedEvent: Event
+    @Binding var selectedRegion: MKCoordinateRegion
+    
     @State var searchText: String = ""
     @State var overlayContentHeight: CGFloat = 0.0
-
-    private let columns: [GridItem] = [
-        GridItem(.flexible()),
-        GridItem(.flexible()),
-    ]
-    let cyan: Color = Color("cyan")
-    let cblue: Color = Color("cblue")
+    @State var moreOffsetBottom: CGFloat = 0.0
+    @State var filteredOrganizers: [Organizer] = []
+    @State var showMenu: Bool = false
+    
+    var groupedAlbums: [String: [Organizer]] {
+        Dictionary(grouping: filteredOrganizers.map { $0 }, by: { String($0.name.prefix(1)).uppercased() })
+    }
+    
+    let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".map { String($0) }
+    
+    @State private var scrollToLetter: String? = nil
+    
     let size: CGSize = UIScreen.main.bounds.size
     
-    private var filteredOrganizer: [Organizer] {
-        if searchText.isEmpty {
-            return self.eventViewModel.organizer
-        } else {
-            return self.eventViewModel.organizer.filter { event in
-                return event.name.lowercased().contains(searchText.lowercased())
-            }
-        }
-    }
-
     @EnvironmentObject var eventViewModel: EventViewModel
-
+    
     var body: some View {
-        GeometryReader {
-            let safeArea = $0.safeAreaInsets
-            let size = $0.size
-            
-            NavigationView {
-                ZStack(alignment: .top) {
+        ZStack(alignment: .top) {
+            HStack(spacing: 0) {
+                ScrollView(.vertical, showsIndicators: false) {
                     
-                    ScrollView(.vertical) {
+                    Spacer(minLength: self.overlayContentHeight)
+                    
+                    ScrollViewReader { proxy in
                         
-                        Spacer(minLength: self.overlayContentHeight + 10)
-                        
-                        LazyVGrid(columns: self.columns) {
-                            ForEach(self.filteredOrganizer) { organizer in
-                                NavigationLink(
-                                    destination:
-                                        OrganizerDetailView(
-                                            overlayContentBottomHeight: self.$overlayContentBottomHeight,
-                                            selectedEvent: self.$selectedEvent,
-                                            organizer: organizer,
-                                            safeArea: safeArea,
-                                            size: size)
-                                        .ignoresSafeArea(.container, edges: .top),
-                                    label: {
-                                        VStack {
-                                            Image(uiImage: organizer.image ?? UIImage(named: "noimage")!)
-                                                .resizable()
-                                                .aspectRatio(contentMode: .fill)
-                                                .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
-                                            Text(organizer.name)
-                                                .foregroundColor(.black)
-                                                .bold()
-                                        }
-                                        .padding(.horizontal)
-                                    })
+                        ForEach(alphabet, id: \.self) { letter in
+                            if let items = groupedAlbums[letter], !items.isEmpty {
+                                VStack(alignment: .leading) {
+                                    let eventsBinding = Binding<[Organizer]>(
+                                        get: { items },
+                                        set: { _ in }
+                                    )
+                                    Text(letter)
+                                        .font(.headline)
+                                    OrganizerScrollContentView(overlayContentBottomHeight: self.$overlayContentBottomHeight,
+                                                               selectedEvent: self.$selectedEvent,
+                                                               selectedRegion: self.$selectedRegion,
+                                                               filteredOrganizers: eventsBinding,
+                                                               moreOffsetBottom: self.$moreOffsetBottom)
+                                    .id(letter)
+                                    .onChange(of: self.scrollToLetter) { newLetter in
+                                        proxy.scrollTo(newLetter, anchor: .center)
+                                    }
+                                }
+                                .padding(.horizontal)
+                                .padding(.top)
                             }
                         }
-                        .padding(.horizontal)
-                        
-                        Spacer(minLength: self.overlayContentBottomHeight + 10)
                     }
-                    .background(
-                        ZStack{
-                            
-                            Image(uiImage: UIImage(named: "background_4")!)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .blur(radius: 15)
-                        })
-                    
-                    .edgesIgnoringSafeArea(.bottom)
-        
-                    SearchBarView(searchText: self.$searchText, overlayContentHeight: self.$overlayContentHeight)
+                    Spacer(minLength: self.overlayContentBottomHeight)
                 }
-                .navigationBarHidden(true)
+                
+                Spacer()
+                
+                AlphabetSidebar(scrollToLetter: self.$scrollToLetter, alphabet: self.alphabet)
             }
-            .navigationViewStyle(StackNavigationViewStyle())
+            .frame(maxWidth: .infinity)
+            .background(
+                ZStack{
+                    Color("Smoke White")
+                }
+                    .edgesIgnoringSafeArea(.top))
+            
+            .edgesIgnoringSafeArea(.bottom)
+            
+            SearchBarView(searchText: self.$searchText,
+                          overlayContentHeight: self.$overlayContentHeight,
+                          showMenu: self.$showMenu)
+            
+            if self.showMenu {
+                OrganizerMenuView(showMenu: self.$showMenu)
+                    .zIndex(1)
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: self.showMenu)
+        .navigationBarHidden(true)
+        .onChange(of: searchText) { newSearchText in
+            if newSearchText.isEmpty {
+                filteredOrganizers = eventViewModel.organizer
+            } else {
+                filteredOrganizers = eventViewModel.organizer.filter { organizer in
+                    return organizer.name.lowercased().contains(newSearchText.lowercased())
+                }
+            }
+        }
+        .onAppear {
+            if !searchText.isEmpty { // Check if there's search text
+                filteredOrganizers = eventViewModel.organizer.filter { organizer in
+                    return organizer.name.lowercased().contains(searchText.lowercased())
+                }
+            }
+            else {
+                self.filteredOrganizers = eventViewModel.organizer
+            }
         }
     }
 }
 
-struct SearchBarView: View {
-    @Binding var searchText: String
-    @Binding var overlayContentHeight: CGFloat
-    var body: some View {
-        VStack(spacing: 5) {
-            Spacer()
-            VStack(spacing: 5) {
-                VStack(alignment: .center) {
-                    Text("Veranstalter:innen")
-                        .font(.title3)
-                        .bold()
-                        .padding(.top)
-                    }
-                HStack {
-                    HStack {
-                        TextField("Suche nach Veranstalter:innen", text: self.$searchText)
-                            .padding(.leading, 24)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal, 4)
-                    .padding(.vertical, 5)
-                    .background(Color(.systemGray5))
-                    .cornerRadius(6)
-                    .overlay(
-                        HStack {
-                            Image(systemName: "magnifyingglass")
-                                .font(.system(size: 18))
-                                .foregroundColor(Color.gray)
-                            Spacer()
-                            Button {
-                                self.searchText = ""
-                            } label: {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.system(size: 18))
-                                    .foregroundColor(Color.gray)
-                            }
-                        }
-                            .padding(.horizontal, 5)
-                        
-                    )
-                }
-            }
-            .padding(.bottom)
-        }
-        .padding(.horizontal)
-        .padding(.top, getSafeAreaTop())
-        .readHeight {
-            self.overlayContentHeight = $0
-        }
-        .background(RemoveBackgroundColor())
-        .background(BlurView(style: .systemUltraThinMaterialDark))
-        .frame(height: UIScreen.main.bounds.size.height / 8)
-        .edgesIgnoringSafeArea(.top)
+extension UIApplication {
+    func endEditing() {
+        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 

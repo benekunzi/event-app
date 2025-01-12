@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Firebase
+import FirebaseAuth
 
 class LoginModel: ObservableObject {
     
@@ -14,6 +14,7 @@ class LoginModel: ObservableObject {
         case authenticating
         case authenticated
         case unauthenticated
+        case skipped
     }
     
     @Published var user: User?

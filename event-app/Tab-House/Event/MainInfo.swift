@@ -10,13 +10,12 @@ import SwiftUI
 import MapKit
 
 struct MainInfoView: View {
-    
+    @Binding var overlayContentTopHeight: CGFloat
     @Binding var overlayContentBottomHeight: CGFloat
     @Binding var selectedDate: Date
-    @Binding var selectedEvent: Event?
+    @Binding var selectedEvent: Event
     @Binding var selectedRegion: MKCoordinateRegion
     
-    @EnvironmentObject var routeViewModel: RouteViewModel
     @EnvironmentObject var mapEventViewModel: MapEventViewModel
     @EnvironmentObject var locationManager: LocationManager
     @EnvironmentObject var eventViewModel: EventViewModel
@@ -26,80 +25,110 @@ struct MainInfoView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .top) {
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 20) {
-                        ForEach(eventViewModel.events.filter { $0.date.isSameDay(as: self.selectedDate) }){ event in
-                            
-                            let (startTime, endTime) = extractStartAndEndTime(timeWindow: event.timeWindow)
-                            Button {
-                                //                        self.locationManager.showRouteToEvent(event: event, locationManager: locationManager.locationManager, mapView: self.locationManager.mapView!)
-                                self.selectedEvent = event
-                                self.selectedRegion = MKCoordinateRegion(center: event.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
-                            } label: {
-                                VStack(alignment: .leading) {
-                                    VStack {
-                                        Image(uiImage: event.image ?? UIImage(named: "noimage")!)
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fill)
-                                            .frame(maxWidth: .infinity,
-                                                   minHeight: self.size.height / 4.26,
-                                                   maxHeight: self.size.height / 4.26)
-                                            .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
-                                        
-                                    }
-                                    Text("\(event.title ?? "")")
-                                        .font(.system(size: 15))
-                                        .foregroundColor(.black)
-                                        .bold()
-                                    Text(event.location)
-                                        .font(.system(size: 10))
-                                        .foregroundColor(.white)
-                                    HStack {
-                                        Text(startTime)
-                                        Text("-")
-                                        Text(endTime)
-                                        
-                                    }
-                                    .font(.system(size: 10))
-                                    .foregroundColor(.white)
-                                    
-                                    Text("Eintritt: \(event.entry)€")
-                                        .font(.system(size: 10))
-                                        .foregroundColor(.white)
+                VStack(spacing: 0) {
+                    ScrollView {
+                        Spacer(minLength: self.overlayContentTopHeight)
+                        LazyVStack(alignment: .leading, spacing: 25) {
+                            ForEach(eventViewModel.events.filter { $0.startDate.isSameDay(as: self.selectedDate) }){ event in
+                                NavigationLink {
+                                    EventInfoView(overlayContentBottomHeight: self.$overlayContentBottomHeight, selectedEvent: self.$selectedEvent, selectedRegion: self.$selectedRegion)
+                                } label: {
+                                    PanelView(event: event, size: self.size)
                                 }
-                                .padding(.horizontal)
-                                .padding(.bottom)
+                                .simultaneousGesture(TapGesture().onEnded {
+                                    self.selectedEvent = event
+                                    self.selectedRegion = MKCoordinateRegion(center: event.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+                                })
                             }
                         }
+                        Spacer(minLength: self.overlayContentBottomHeight)
                     }
-                    Spacer(minLength: self.overlayContentBottomHeight + 10)
                 }
-//                
-//                TopView()
-//                    .frame(width: geometry.size.width, height: self.size.height / 14)
-//                    .offset(y: -10)
             }
         }
     }
 }
 
-struct TopView: View {
+struct PanelView: View {
     
-    let cyan: Color = Color("cyan")
+    var event: Event
+    let size: CGSize
+    
+    @State var startTime: String = ""
+    @State var endTime: String = ""
+    
+    let dateFormatter = DateFormatter()
     
     var body: some View {
-        ZStack {
-            Rectangle()
-//                .fill(Color.red)
-                .fill(LinearGradient(
-                    colors: [self.cyan.opacity(1),
-                             self.cyan.opacity(0.8),
-                             self.cyan.opacity(0.7),
-                             self.cyan.opacity(0.5),
-                             self.cyan.opacity(0.3),
-                             self.cyan.opacity(0.0)],
-                    startPoint: .top,
-                    endPoint: .bottom))
+        VStack(spacing: 0) {
+            Image(uiImage: (event.image ?? UIImage(named: "EventImage"))!) // Replace with your image name
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(height: 150)
+                .clipped()
+                .cornerRadius(20, corners: [.topLeft, .topRight])
+                
+            VStack(alignment: .leading, spacing: 4) {
+                Text(event.name)
+                    .font(.headline)
+                    .foregroundColor(.black)
+                    .lineLimit(1)
+                    .padding(.vertical, 5)
+                    .padding(.top, 5)
+                    
+                VStack(alignment: .leading, spacing: 2) {
+                    if let locationName = event.locationName {
+                        Text("\(locationName) · \(self.startTime) - \(self.endTime)")
+                            .foregroundColor(.gray)
+                    }
+                    else {
+                        Text("\(event.street) · \(self.startTime) - \(self.endTime)")
+                            .foregroundColor(.gray)
+                    }
+                    
+                    Text("Eintritt: \(event.entry)€")
+                        .foregroundColor(.gray)
+                }
+                .font(.system(size: 12))
+                .padding(.bottom)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal)
+            .background(Color.white)
+            .cornerRadius(20, corners: [.bottomLeft, .bottomRight])
         }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal)
+        .onAppear(perform: {
+            dateFormatter.dateFormat = "HH-mm"
+            self.startTime = dateFormatter.string(from: event.startDate)
+            self.endTime = dateFormatter.string(from: event.endDate)
+        })
+        .onChange(of: self.event) { newValue in
+            dateFormatter.dateFormat = "HH-mm"
+            self.startTime = dateFormatter.string(from: newValue.startDate)
+            self.endTime = dateFormatter.string(from: newValue.endDate)
+        }
+    }
+}
+
+extension View {
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape(RoundedCorner(radius: radius, corners: corners) )
+    }
+}
+
+struct RoundedCorner: Shape {
+    let radius: CGFloat
+    let corners: UIRectCorner
+
+    init(radius: CGFloat = .infinity, corners: UIRectCorner = .allCorners) {
+        self.radius = radius
+        self.corners = corners
+    }
+
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
     }
 }

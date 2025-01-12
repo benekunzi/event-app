@@ -60,45 +60,20 @@ struct EventFinderView: View {
             .edgesIgnoringSafeArea(.top)
             
             if showMenu {
-                MenuView(showMenu: self.$showMenu,
+                SavedMenuView(showMenu: self.$showMenu,
                          selectedDate: self.$selectedDate,
                          showCalendar: self.$showCalendar)
+                .zIndex(1)
             }
             
             if showCalendar {
-                VStack{
-                    DatePicker(selection: $selectedDate, displayedComponents: .date, label: { EmptyView() })
-                        .datePickerStyle(.graphical)
-                        .environment(\.calendar, .gregorianWithMondayFirst)
-                        .labelsHidden()
-                        .padding()
-                        .background(Color("Purple"))
-                        .clipShape(RoundedRectangle(cornerRadius: 25))
-                        .frame(maxHeight: .infinity)
-                        .foregroundColor(.white)
-                        .accentColor(.white)
-                        .padding(.horizontal)
-                        .id(self.calendarId)
-                        .onChange(of: selectedDate) { _ in
-                            withAnimation(.easeInOut) {
-                                showCalendar.toggle()
-                                self.calendarId += 1
-                            }
-                        }
-                        .background(
-                            BlurView(style: .systemUltraThinMaterialLight)
-                                .onTapGesture {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        self.showCalendar.toggle()
-                                    }
-                                }
-                                .edgesIgnoringSafeArea(.bottom)
-                        )
-                    Spacer()
-                }
+                DatePickerView(selectedDate: self.$selectedDate,
+                               showCalendar: self.$showCalendar)
+                .zIndex(2)
             }
         }
         .edgesIgnoringSafeArea(.bottom)
+        .animation(.easeInOut(duration: 0.3), value: self.showCalendar)
     }
 }
 

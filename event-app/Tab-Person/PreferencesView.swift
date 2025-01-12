@@ -25,20 +25,23 @@ struct PreferencesView: View {
                     HStack {
                         Text("Logout")
                             .foregroundColor(.white)
+                            .font(.body.bold())
                     }
                     .padding()
-                    .background(Color.blue)
+                    .background(Color("Dark Purple"))
                     .cornerRadius(8)
                 }
                 Spacer()
             }
         }
-        .padding(.bottom, self.overlayContentBottomHeight + 10)
-        .background(                            
-            Image(uiImage: UIImage(named: "background_1")!)
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-            .blur(radius: 15)
+        .padding(.bottom, self.overlayContentBottomHeight)
+        .padding(.bottom)
+        .background(
+            ZStack {
+                Color("Smoke White")
+            }
+                .edgesIgnoringSafeArea(.top)
+                .edgesIgnoringSafeArea(.bottom)
         )
     }
 }

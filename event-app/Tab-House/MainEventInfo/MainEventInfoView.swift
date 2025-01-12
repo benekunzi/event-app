@@ -10,8 +10,6 @@ import SwiftUI
 import MapKit
 
 struct MainEventInfoView2: View {
-
-    @EnvironmentObject var routeViewModel: RouteViewModel
     @EnvironmentObject var mapEventViewModel: MapEventViewModel
     @EnvironmentObject var locationManager: LocationManager
     @EnvironmentObject var eventViewModel: EventViewModel
@@ -70,7 +68,8 @@ struct MainEventInfoView2: View {
                                 //                                .padding(.top, showCalendar ? 300 : 0)
                                 Spacer()
                             } else {
-                                MainEventOptionView(selectedDate: self.$selectedDate, showCalendar: self.$showCalendar)
+                                MainEventOptionView(selectedDate: self.$selectedDate,
+                                                    showCalendar: self.$showCalendar)
                             }
                         }
                         .padding(.top, getSafeAreaTop())
@@ -104,6 +103,7 @@ struct MainEventInfoView2: View {
                     if self.showCalendar {
                         DatePickerView(selectedDate: self.$selectedDate,
                                        showCalendar: self.$showCalendar)
+                        .zIndex(1)
                     }
                 }.tag("house")
                 
@@ -141,85 +141,6 @@ struct MainEventInfoView2: View {
             }
             UITabBar.appearance().isHidden = true
         }
-    }
-}
-
-struct MainEventOptionView: View {
-    
-    @Binding var selectedDate: Date
-    @Binding var showCalendar: Bool
-    
-    static let dateFormatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "E d.MM.yy"
-            return formatter
-        }()
-    
-    var body: some View {
-        HStack(spacing: 20) {
-            OptionPillShapeView(title: Self.dateFormatter.string(from: self.selectedDate))
-            .onTapGesture {
-                self.showCalendar.toggle()
-            }
-            
-            OptionPillShapeView(title: "Stadt")
-            
-            OptionPillShapeView(title: "Kategorie")
-            
-            Spacer()
-        }
-        .padding(.leading)
-    }
-}
-
-struct OptionPillShapeView: View {
-    
-    let title: String
-    
-    var body: some View {
-        Text(title)
-            .padding(5)
-            .padding(.horizontal, 3)
-            .font(.footnote.bold())
-            .background(Capsule(style: .continuous).fill(Color("Light Purple")))
-            .foregroundColor(Color("Purple"))
-    }
-}
-
-struct DatePickerView: View {
-    
-    @Binding var selectedDate: Date
-    @Binding var showCalendar: Bool
-    
-    @State private var calendarId: Int = 0
-    
-    var body: some View {
-        VStack {
-            Spacer()
-            DatePicker("", selection: $selectedDate, displayedComponents: .date)
-                .datePickerStyle(.graphical)
-                .environment(\.calendar, .gregorianWithMondayFirst)
-                .frame(maxWidth: .infinity)
-                .labelsHidden()
-                .padding(.horizontal, 20)
-                .background(Color("Light Purple"))
-                .foregroundColor(Color("Purple"))
-                .accentColor(Color("Purple"))
-                .clipShape(RoundedRectangle(cornerRadius: 25))
-                .id(self.calendarId)
-                .onChange(of: selectedDate) { _ in
-                    withAnimation(.easeInOut) {
-                        self.showCalendar.toggle()
-                        self.calendarId += 1
-                    }
-                }
-            Spacer()
-        }
-        .background(BlurView(style: .systemUltraThinMaterial).contentShape(Rectangle()).onTapGesture {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                self.showCalendar.toggle()
-            }
-        })
-        .edgesIgnoringSafeArea(.all)
+        .animation(.easeInOut(duration: 0.3), value: self.showCalendar)
     }
 }
