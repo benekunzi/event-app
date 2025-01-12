@@ -4,3 +4,5 @@ event-app.xcodeproj/
 event-app/important.swift
 Bilder/
 Language-Symbol.svg
+event-app/GoogleService-Info.plist
+event-app/Assets.xcassets/
